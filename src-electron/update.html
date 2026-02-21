@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+  <title>Aura - Actualización</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
+    body {
+      background: #0a0a0a;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .titlebar {
+      -webkit-app-region: drag;
+      height: 32px;
+      background: #0a0a0a;
+      flex-shrink: 0;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 40px 40px;
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      background: #111;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .status {
+      color: #888;
+      font-size: 13px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 6px;
+      background: #1a1a1a;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #2d74ff;
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      color: #555;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .spinner-container {
+      margin-bottom: 28px;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #1a1a1a;
+      border-top-color: #2d74ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .footer {
+      text-align: center;
+      padding: 16px;
+      color: #555;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <div class="titlebar"></div>
+
+  <div class="content">
+    <div class="logo">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+
+    <h1>Aura</h1>
+    <p class="status" id="statusText">Buscando actualizaciones...</p>
+
+    <div class="spinner-container" id="spinnerContainer">
+      <div class="spinner"></div>
+    </div>
+
+    <div class="progress-container" id="progressContainer" style="display:none;">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <p class="progress-text" id="progressText"></p>
+  </div>
+
+  <div class="footer">Aura &copy; 2025</div>
+
+  <script>
+    const statusText = document.getElementById('statusText');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const spinnerContainer = document.getElementById('spinnerContainer');
+
+    window.updateAPI.onStatus((data) => {
+      if (data.status === 'checking') {
+        statusText.textContent = 'Buscando actualizaciones...';
+      } else if (data.status === 'downloading') {
+        statusText.textContent = 'Descargando actualización v' + data.version + '...';
+        spinnerContainer.style.display = 'none';
+        progressContainer.style.display = 'block';
+      } else if (data.status === 'progress') {
+        progressBar.style.width = data.percent + '%';
+        progressText.textContent = data.percent + '%';
+      } else if (data.status === 'downloaded') {
+        statusText.textContent = 'Instalando actualización...';
+        progressBar.style.width = '100%';
+        progressText.textContent = 'Reiniciando...';
+      } else if (data.status === 'no-update') {
+        statusText.textContent = 'App actualizada';
+      } else if (data.status === 'error') {
+        statusText.textContent = 'Continuando...';
+      }
+    });
+  </script>
+</body>
+</html>

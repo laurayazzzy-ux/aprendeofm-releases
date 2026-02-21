@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura - Admin Panel</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
+    body { background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
+
+    /* Login Screen */
+    .login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .login-box { background: #151515; border: 1px solid #333; border-radius: 12px; padding: 40px; width: 400px; }
+    .login-box h1 { font-size: 24px; color: #fff; margin-bottom: 8px; text-align: center; }
+    .login-box p { color: #888; text-align: center; margin-bottom: 24px; font-size: 14px; }
+    .login-box input { width: 100%; padding: 12px 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; outline: none; }
+    .login-box input:focus { border-color: #2d74ff; }
+    .login-box button { width: 100%; padding: 12px; background: #2d74ff; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .login-box button:hover { background: #1a5ce6; }
+    .login-error { color: #ff4444; font-size: 13px; margin-bottom: 12px; display: none; text-align: center; }
+
+    /* App Layout */
+    .app { display: none; }
+    .app.visible { display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: #111; border-right: 1px solid #222; padding: 20px 0; flex-shrink: 0; }
+    .sidebar h2 { font-size: 18px; color: #fff; padding: 0 20px; margin-bottom: 24px; }
+    .sidebar h2 span { color: #2d74ff; }
+    .sidebar a { display: block; padding: 10px 20px; color: #888; text-decoration: none; font-size: 14px; cursor: pointer; }
+    .sidebar a:hover, .sidebar a.active { color: #fff; background: #1a1a1a; }
+    .sidebar .logout { margin-top: auto; position: absolute; bottom: 20px; left: 0; width: 220px; }
+    .sidebar .logout a { color: #ff4444; }
+
+    .main-content { flex: 1; padding: 24px 32px; overflow-y: auto; }
+    .main-content h2 { font-size: 22px; color: #fff; margin-bottom: 20px; }
+
+    /* Top Bar */
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .top-bar .stats { display: flex; gap: 16px; }
+    .stat-card { background: #151515; border: 1px solid #222; border-radius: 8px; padding: 12px 20px; min-width: 120px; }
+    .stat-card .label { font-size: 12px; color: #888; margin-bottom: 4px; }
+    .stat-card .value { font-size: 20px; font-weight: 700; color: #fff; }
+    .stat-card .value.green { color: #22c55e; }
+    .stat-card .value.yellow { color: #eab308; }
+    .stat-card .value.red { color: #ef4444; }
+
+    /* Buttons */
+    .btn { padding: 8px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: #2d74ff; color: #fff; }
+    .btn-primary:hover { background: #1a5ce6; }
+    .btn-danger { background: #dc2626; color: #fff; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-secondary { background: #333; color: #fff; }
+    .btn-secondary:hover { background: #444; }
+    .btn-sm { padding: 4px 10px; font-size: 12px; }
+    .btn-success { background: #16a34a; color: #fff; }
+    .btn-warning { background: #d97706; color: #fff; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; }
+    thead th { text-align: left; padding: 10px 12px; font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #222; }
+    tbody td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #1a1a1a; vertical-align: middle; }
+    tbody tr:hover { background: #1a1a1a; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+    .badge-active { background: #16a34a22; color: #22c55e; }
+    .badge-suspended { background: #d9770622; color: #eab308; }
+    .badge-revoked { background: #dc262622; color: #ef4444; }
+    .badge-expired { background: #55555522; color: #888; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; align-items: center; justify-content: center; }
+    .modal-overlay.visible { display: flex; }
+    .modal { background: #151515; border: 1px solid #333; border-radius: 12px; padding: 24px; width: 480px; max-height: 80vh; overflow-y: auto; }
+    .modal h3 { color: #fff; margin-bottom: 16px; font-size: 18px; }
+    .modal label { display: block; font-size: 13px; color: #888; margin-bottom: 4px; margin-top: 12px; }
+    .modal input, .modal select, .modal textarea { width: 100%; padding: 10px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 14px; outline: none; }
+    .modal input:focus, .modal select:focus { border-color: #2d74ff; }
+    .modal textarea { resize: vertical; min-height: 60px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+
+    /* Key display */
+    .key-display { background: #0a0a0a; border: 2px dashed #2d74ff; border-radius: 8px; padding: 16px; text-align: center; margin: 16px 0; }
+    .key-display code { font-size: 24px; font-family: 'Roboto Mono', monospace; color: #2d74ff; letter-spacing: 2px; }
+    .key-display p { font-size: 12px; color: #ff8800; margin-top: 8px; }
+
+    /* Devices list */
+    .device-card { background: #1a1a1a; border: 1px solid #222; border-radius: 8px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .device-info { font-size: 13px; }
+    .device-info .fp { font-family: monospace; color: #2d74ff; font-size: 11px; }
+    .device-info .seen { color: #888; font-size: 11px; margin-top: 4px; }
+
+    /* Logs */
+    .log-entry { padding: 8px 12px; border-bottom: 1px solid #1a1a1a; font-size: 13px; display: flex; gap: 12px; }
+    .log-entry .time { color: #888; font-family: monospace; font-size: 12px; min-width: 160px; }
+    .log-entry .action { font-weight: 600; min-width: 160px; }
+    .log-entry .details { color: #aaa; }
+
+    /* Filter bar */
+    .filter-bar { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
+    .filter-bar select, .filter-bar input { padding: 8px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 13px; outline: none; }
+
+    /* Sections */
+    .section { display: none; }
+    .section.visible { display: block; }
+
+    /* Copy btn */
+    .copy-btn { cursor: pointer; color: #2d74ff; font-size: 12px; margin-left: 8px; }
+    .copy-btn:hover { text-decoration: underline; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <!-- Login -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <h1>Aura Admin</h1>
+      <p>Panel de administración de licencias</p>
+      <div class="login-error" id="loginError"></div>
+      <input type="text" id="loginUser" placeholder="Usuario" autocomplete="off">
+      <input type="password" id="loginPass" placeholder="Contraseña">
+      <button onclick="doLogin()">Iniciar Sesión</button>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div class="app" id="app">
+    <div class="sidebar" style="position:relative">
+      <h2><span>Aura</span> Admin</h2>
+      <a class="active" data-section="keys" onclick="showSection('keys')">Licencias</a>
+      <a data-section="logs" onclick="showSection('logs')">Audit Logs</a>
+      <div class="logout"><a onclick="doLogout()">Cerrar Sesión</a></div>
+    </div>
+    <div class="main-content">
+      <!-- Keys Section -->
+      <div class="section visible" id="section-keys">
+        <div class="top-bar">
+          <h2>Licencias</h2>
+          <div class="stats" id="statsBar"></div>
+        </div>
+        <div class="filter-bar">
+          <select id="statusFilter" onchange="loadKeys()">
+            <option value="">Todos los estados</option>
+            <option value="active">Activas</option>
+            <option value="suspended">Suspendidas</option>
+            <option value="revoked">Revocadas</option>
+            <option value="expired">Expiradas</option>
+          </select>
+          <div style="flex:1"></div>
+          <button class="btn btn-primary" onclick="openCreateModal()">+ Nueva Clave</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Hint</th>
+              <th>Estado</th>
+              <th>Dispositivos</th>
+              <th>Expira</th>
+              <th>Nota</th>
+              <th>Creada</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="keysTable"></tbody>
+        </table>
+      </div>
+
+      <!-- Logs Section -->
+      <div class="section" id="section-logs">
+        <h2>Audit Logs</h2>
+        <div class="filter-bar">
+          <select id="logActionFilter" onchange="loadLogs()">
+            <option value="">Todas las acciones</option>
+            <option value="validate_success">Validación exitosa</option>
+            <option value="validate_failed">Validación fallida</option>
+            <option value="key_created">Clave creada</option>
+            <option value="key_deleted">Clave eliminada</option>
+            <option value="key_updated">Clave actualizada</option>
+            <option value="key_status_changed">Estado cambiado</option>
+            <option value="key_expired">Clave expirada</option>
+            <option value="device_deleted">Dispositivo eliminado</option>
+            <option value="admin_login">Login admin</option>
+            <option value="admin_login_failed">Login admin fallido</option>
+          </select>
+        </div>
+        <div id="logsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Key Modal -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal">
+      <h3>Crear Nueva Licencia</h3>
+      <label>Máx. Dispositivos</label>
+      <input type="number" id="createMaxDevices" value="1" min="1" max="100">
+      <label>Fecha de Expiración (opcional)</label>
+      <input type="datetime-local" id="createExpires">
+      <label>Nota</label>
+      <textarea id="createNote" placeholder="Nota interna..."></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('createModal')">Cancelar</button>
+        <button class="btn btn-primary" onclick="createKey()">Generar Clave</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Created Modal -->
+  <div class="modal-overlay" id="keyCreatedModal">
+    <div class="modal">
+      <h3>Clave Generada</h3>
+      <div class="key-display">
+        <code id="newKeyDisplay"></code>
+        <span class="copy-btn" onclick="copyKey()">Copiar</span>
+        <p>Guarda esta clave. No se puede recuperar después de cerrar esta ventana.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="closeModal('keyCreatedModal')">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Key Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <h3>Editar Licencia</h3>
+      <input type="hidden" id="editKeyId">
+      <label>Estado</label>
+      <select id="editStatus">
+        <option value="active">Activa</option>
+        <option value="suspended">Suspendida</option>
+        <option value="revoked">Revocada</option>
+        <option value="expired">Expirada</option>
+      </select>
+      <label>Máx. Dispositivos</label>
+      <input type="number" id="editMaxDevices" min="1" max="100">
+      <label>Fecha de Expiración</label>
+      <input type="datetime-local" id="editExpires">
+      <label>Nota</label>
+      <textarea id="editNote"></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('editModal')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveEdit()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Devices Modal -->
+  <div class="modal-overlay" id="devicesModal">
+    <div class="modal">
+      <h3>Dispositivos Vinculados</h3>
+      <div id="devicesContainer"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('devicesModal')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = window.location.origin + '/api';
+    let token = localStorage.getItem('admin_token');
+    let allKeys = [];
+
+    // Init
+    if (token) {
+      showApp();
+    }
+
+    function headers() {
+      return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+    }
+
+    async function doLogin() {
+      const username = document.getElementById('loginUser').value.trim();
+      const password = document.getElementById('loginPass').value;
+      const errEl = document.getElementById('loginError');
+      errEl.style.display = 'none';
+
+      try {
+        const res = await fetch(API + '/admin/login', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error; errEl.style.display = 'block'; return; }
+        token = data.token;
+        localStorage.setItem('admin_token', token);
+        showApp();
+      } catch (e) {
+        errEl.textContent = 'Error de conexión con el servidor.';
+        errEl.style.display = 'block';
+      }
+    }
+
+    function doLogout() {
+      token = null;
+      localStorage.removeItem('admin_token');
+      document.getElementById('app').classList.remove('visible');
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
+
+    function showApp() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').classList.add('visible');
+      loadKeys();
+    }
+
+    function showSection(name) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+      document.getElementById('section-' + name).classList.add('visible');
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.toggle('active', a.dataset.section === name));
+      if (name === 'keys') loadKeys();
+      if (name === 'logs') loadLogs();
+    }
+
+    async function loadKeys() {
+      try {
+        const res = await fetch(API + '/admin/keys', { headers: headers() });
+        if (res.status === 401) { doLogout(); return; }
+        allKeys = await res.json();
+        renderKeys();
+        renderStats();
+      } catch (e) { console.error(e); }
+    }
+
+    function renderStats() {
+      const total = allKeys.length;
+      const active = allKeys.filter(k => k.status === 'active').length;
+      const suspended = allKeys.filter(k => k.status === 'suspended').length;
+      const revoked = allKeys.filter(k => k.status === 'revoked' || k.status === 'expired').length;
+      document.getElementById('statsBar').innerHTML = `
+        <div class="stat-card"><div class="label">Total</div><div class="value">${total}</div></div>
+        <div class="stat-card"><div class="label">Activas</div><div class="value green">${active}</div></div>
+        <div class="stat-card"><div class="label">Suspendidas</div><div class="value yellow">${suspended}</div></div>
+        <div class="stat-card"><div class="label">Revocadas/Exp</div><div class="value red">${revoked}</div></div>
+      `;
+    }
+
+    function renderKeys() {
+      const filter = document.getElementById('statusFilter').value;
+      const filtered = filter ? allKeys.filter(k => k.status === filter) : allKeys;
+      const tbody = document.getElementById('keysTable');
+      tbody.innerHTML = filtered.map(k => `
+        <tr>
+          <td>#${k.id}</td>
+          <td style="font-family:monospace;color:#2d74ff">${k.display_hint || '****'}</td>
+          <td><span class="badge badge-${k.status}">${k.status}</span></td>
+          <td>${k.device_count || 0} / ${k.max_devices}</td>
+          <td>${k.expires_at ? new Date(k.expires_at).toLocaleDateString() : 'Nunca'}</td>
+          <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${k.note || '-'}</td>
+          <td>${new Date(k.created_at).toLocaleDateString()}</td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="openEdit(${k.id})">Editar</button>
+            <button class="btn btn-secondary btn-sm" onclick="viewDevices(${k.id})">Devices</button>
+            ${k.status === 'active' ? `<button class="btn btn-warning btn-sm" onclick="changeStatus(${k.id},'suspended')">Suspender</button>` : ''}
+            ${k.status === 'suspended' ? `<button class="btn btn-success btn-sm" onclick="changeStatus(${k.id},'active')">Activar</button>` : ''}
+            ${k.status !== 'revoked' ? `<button class="btn btn-danger btn-sm" onclick="changeStatus(${k.id},'revoked')">Revocar</button>` : ''}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openCreateModal() {
+      document.getElementById('createMaxDevices').value = 1;
+      document.getElementById('createExpires').value = '';
+      document.getElementById('createNote').value = '';
+      document.getElementById('createModal').classList.add('visible');
+    }
+
+    async function createKey() {
+      const maxDevices = parseInt(document.getElementById('createMaxDevices').value) || 1;
+      const expiresAt = document.getElementById('createExpires').value || null;
+      const note = document.getElementById('createNote').value;
+
+      try {
+        const res = await fetch(API + '/admin/keys', {
+          method: 'POST', headers: headers(),
+          body: JSON.stringify({ maxDevices, expiresAt, note })
+        });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error); return; }
+
+        closeModal('createModal');
+        document.getElementById('newKeyDisplay').textContent = data.key;
+        document.getElementById('keyCreatedModal').classList.add('visible');
+        loadKeys();
+      } catch (e) { alert('Error de conexión.'); }
+    }
+
+    function copyKey() {
+      const key = document.getElementById('newKeyDisplay').textContent;
+      navigator.clipboard.writeText(key);
+    }
+
+    function openEdit(id) {
+      const k = allKeys.find(x => x.id === id);
+      if (!k) return;
+      document.getElementById('editKeyId').value = id;
+      document.getElementById('editStatus').value = k.status;
+      document.getElementById('editMaxDevices').value = k.max_devices;
+      document.getElementById('editExpires').value = k.expires_at ? k.expires_at.slice(0, 16) : '';
+      document.getElementById('editNote').value = k.note || '';
+      document.getElementById('editModal').classList.add('visible');
+    }
+
+    async function saveEdit() {
+      const id = document.getElementById('editKeyId').value;
+      const status = document.getElementById('editStatus').value;
+      const maxDevices = parseInt(document.getElementById('editMaxDevices').value);
+      const expiresAt = document.getElementById('editExpires').value || null;
+      const note = document.getElementById('editNote').value;
+
+      try {
+        const res = await fetch(API + '/admin/keys/' + id, {
+          method: 'PUT', headers: headers(),
+          body: JSON.stringify({ status, maxDevices, expiresAt, note })
+        });
+        if (!res.ok) { const d = await res.json(); alert(d.error); return; }
+        closeModal('editModal');
+        loadKeys();
+      } catch (e) { alert('Error de conexión.'); }
+    }
+
+    async function changeStatus(id, status) {
+      if (!confirm(`¿Cambiar estado a "${status}"?`)) return;
+      try {
+        await fetch(API + '/admin/keys/' + id + '/status', {
+          method: 'PUT', headers: headers(),
+          body: JSON.stringify({ status })
+        });
+        loadKeys();
+      } catch (e) { alert('Error.'); }
+    }
+
+    async function viewDevices(licenseId) {
+      try {
+        const res = await fetch(API + '/admin/keys/' + licenseId + '/devices', { headers: headers() });
+        const devices = await res.json();
+        const container = document.getElementById('devicesContainer');
+        if (devices.length === 0) {
+          container.innerHTML = '<p style="color:#888;text-align:center;padding:20px">No hay dispositivos vinculados.</p>';
+        } else {
+          container.innerHTML = devices.map(d => `
+            <div class="device-card">
+              <div class="device-info">
+                <div class="fp">${d.fingerprint}</div>
+                <div class="seen">Último acceso: ${new Date(d.last_seen).toLocaleString()}</div>
+                ${d.hardware_info ? `<div class="seen">${d.hardware_info.platform || ''} ${d.hardware_info.arch || ''} ${d.hardware_info.cpu || ''}</div>` : ''}
+              </div>
+              <button class="btn btn-danger btn-sm" onclick="deleteDevice(${d.id}, ${licenseId})">Eliminar</button>
+            </div>
+          `).join('');
+        }
+        document.getElementById('devicesModal').classList.add('visible');
+      } catch (e) { alert('Error.'); }
+    }
+
+    async function deleteDevice(deviceId, licenseId) {
+      if (!confirm('¿Eliminar este dispositivo?')) return;
+      try {
+        await fetch(API + '/admin/devices/' + deviceId, { method: 'DELETE', headers: headers() });
+        viewDevices(licenseId);
+        loadKeys();
+      } catch (e) { alert('Error.'); }
+    }
+
+    async function loadLogs() {
+      const action = document.getElementById('logActionFilter').value;
+      try {
+        const url = API + '/admin/logs?limit=200' + (action ? '&action=' + action : '');
+        const res = await fetch(url, { headers: headers() });
+        if (res.status === 401) { doLogout(); return; }
+        const logs = await res.json();
+        document.getElementById('logsContainer').innerHTML = logs.map(l => `
+          <div class="log-entry">
+            <span class="time">${new Date(l.created_at).toLocaleString()}</span>
+            <span class="action">${l.action}</span>
+            <span class="details">${l.ip_address || ''} ${l.details ? JSON.stringify(l.details) : ''}</span>
+          </div>
+        `).join('') || '<p style="color:#888;padding:20px">No hay logs.</p>';
+      } catch (e) { console.error(e); }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('visible');
+    }
+
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+      el.addEventListener('click', e => { if (e.target === el) el.classList.remove('visible'); });
+    });
+
+    // Enter key for login
+    document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  </script>
+</body>
+</html>

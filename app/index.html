@@ -1,0 +1,3825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Aura</title>
+  <link rel="shortcut icon" type="image/png" href="assets/short-logo.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      /* Real Aura design tokens */
+      --font-text: "Inter", "Calibri", sans-serif;
+      --font-mono: "Roboto Mono", "SF Mono", "Consolas", monospace;
+      --color-primary: #2d74ff;
+      --color-primary-label: #1890F1;
+      --color-brand-orange: #F88056;
+      --color-success: #2ad4ac;
+      --color-error: #ff7c71;
+      --color-warning: #ffa15f;
+      --color-bg-base: rgba(11, 11, 11, 1);
+      --color-bg-surface-0: #000000;
+      --color-bg-surface-1: #121212;
+      --color-bg-surface-2: #151515;
+      --color-bg-surface-3: #262626;
+      --color-bg-elevated: #171717;
+      --color-bg-hover: #353535;
+      --color-border: #444444;
+      --color-border-subtle: #1e1e1e;
+      --color-text-primary: #ffffff;
+      --color-text-secondary: #9E9E9E;
+      --color-text-tertiary: #808080;
+      --color-text-muted: #bbb;
+      --radius-surface: 12px;
+      --radius-control: 8px;
+      --radius-pill: 50px;
+      --space-nano: 4px;
+      --space-micro: 8px;
+      --space-mini: 12px;
+      --space-small: 16px;
+      --space-medium: 24px;
+      --space-large: 32px;
+      --nav-width: 52px;
+      --nav-width-expanded: 250px;
+    }
+
+    * { padding: 0; margin: 0; font-family: "Calibri", sans-serif; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body, textarea, input {
+      padding: 0; margin: 0; line-height: 1.3; font-weight: 400;
+      color: white; font-family: "Inter", sans-serif;
+    }
+    body {
+      background: var(--color-bg-base);
+      overflow: hidden;
+      text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+    a { text-decoration: none; display: inline-block; }
+    a:hover { text-decoration: unset; }
+    h1,h2,h3,h4,h5,h6 { padding:0; margin:0; font-weight:400; }
+    p { margin:0; padding:0; }
+    ul { list-style: none; padding:0; margin:0; }
+    ol { padding:0; margin:0; }
+    hr { border: 0; border-top: 1px solid #171717; margin: 8px 0; }
+
+    /* ===== LAYOUT ===== */
+    .dashboard-wrap {
+      background: var(--color-bg-surface-0);
+      min-height: 100vh;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    /* ===== TOP HEADER ===== */
+    .dashboard-header {
+      width: 100%;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .justify-content-between { justify-content: space-between !important; }
+    .justify-content-end { justify-content: flex-end !important; }
+    .d-flex { display: flex !important; }
+    .align-items-center { align-items: center !important; }
+
+    .sidebar-logo-wrap {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-left: 6px; padding-right: 8px; width: 100%;
+    }
+    .menu-btn {
+      background: transparent; border: 0; outline: none !important; cursor: pointer;
+    }
+    .menu-btn img { width: 19px; height: 19px; object-fit: contain; }
+
+    /* Header right items */
+    .operational { position: relative; }
+    .operational p {
+      font-weight: bold; cursor: pointer; padding: 6px 0;
+      display: flex; align-items: center; color: white; font-size: 14px;
+    }
+    .operational .status-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background-color: #58A744; margin-right: 10px; display: inline-block;
+    }
+    .operational:hover .dropdown-menu { display: block !important; }
+    .operational .dropdown-menu li a:hover { background: #38393C !important; }
+
+    .time-zone {
+      border-radius: var(--radius-control); padding: var(--space-micro); font-size: 17px; font-weight: 600;
+      line-height: 1.25; color: var(--color-text-primary); display: inline-flex; align-items: center;
+      margin-right: var(--space-small); background-color: var(--color-bg-elevated);
+    }
+    .time-zone .tooltip-custom { margin-right: 10px; margin-left: 5px; }
+    .time-zone .info-icon { margin-right: 5px; margin-left: 5px; }
+
+    .referrals-link {
+      padding: var(--space-micro); background: var(--color-bg-elevated); border-radius: var(--radius-control);
+      display: inline-flex; align-items: center; margin-right: var(--space-micro);
+      color: var(--color-text-primary); text-decoration: none;
+    }
+    .referrals-link img { margin-right: 8px; width: 19px; height: 19px; object-fit: contain; }
+    .referrals-link span {
+      font-size: 17px; font-weight: 600; line-height: 17px;
+      padding-top: 1px; color: #ffffff; white-space: nowrap;
+    }
+
+    .toggle-container {
+      display: inline-flex; align-items: center; background-color: black;
+      color: white; border-radius: 20px; padding: 4px 10px;
+      font-family: sans-serif; font-size: 16px; flex-direction: column;
+    }
+    .toggle-label { color: #616161; }
+    .toggle-switch {
+      position: relative; width: 26px; height: 17px;
+      background-color: #171717; border-radius: 20px; cursor: pointer;
+    }
+    .toggle-switch input { display: none; }
+    .slider-toggle {
+      position: absolute; height: 10px; width: 10px; background-color: white;
+      border-radius: 50%; top: 4px; left: 3px; transition: 0.3s;
+    }
+
+    .notification-link {
+      border-radius: var(--radius-control); display: flex; align-items: center; justify-content: center;
+      position: relative; margin-right: 7px; background-color: var(--color-bg-elevated); padding: var(--space-micro);
+      text-decoration: none;
+    }
+    .notification-link img { width: 19px; height: 19px; object-fit: contain; }
+    .notification-link.window-buttons { background-color: transparent; }
+
+    .profile-dropdown { margin-right: 20px; position: relative; }
+    .profile-dropdown:hover .dropdown-menu { display: block !important; }
+    .profile-dropdown .dropdown-menu li a:hover { background: #38393C !important; }
+    .profile-dropdown .dropdown-toggle {
+      background: transparent; border: 0; outline: none !important;
+      font-size: 12px; line-height: 1; color: #fff; display: flex; align-items: center;
+      cursor: pointer;
+    }
+    .profile-dropdown .avatarName {
+      width: 28px; height: 28px; border: 1px solid #fff; background: #f1f2f4;
+      display: flex; align-items: center; justify-content: center;
+      color: #00aff1; font-size: 16px; line-height: 1; margin-right: 8px;
+      border-radius: 50%; font-weight: 600;
+    }
+    .profile-dropdown .avatarImg {
+      width: 28px; height: 28px; border: 1px solid #fff;
+      border-radius: 50%; object-fit: cover; margin-right: 8px;
+    }
+
+    .tooltip-custom { border: 0; background: transparent; display: inline-flex; cursor: pointer; }
+    .tooltip-custom img { width: 15px; height: 15px; }
+
+    /* ===== SIDEBAR ===== */
+    .dashboard-sidebar {
+      width: var(--nav-width-expanded); height: calc(100vh - 48px); overflow-y: auto;
+      padding: 7px 7px 26px 9px; display: flex; flex-direction: column;
+      justify-content: space-between; align-items: center; row-gap: 35px;
+    }
+    .dashboard-sidebar::-webkit-scrollbar { width: 0; }
+
+    .sidebar-main { width: 100%; }
+
+    .sidebar-link-list li { margin-bottom: 5px; }
+    .sidebar-link-list li:last-child { margin-bottom: 0; }
+
+    .sidebar-link-list li > a,
+    .sidebar-link-list li > button {
+      padding: 10px 12px; display: flex; align-items: center;
+      font-size: 19px; line-height: 18px; color: #9E9E9E; width: 100%;
+      background: transparent; border: 0; border-radius: 10px;
+      font-weight: bold; cursor: pointer; font-family: "Inter", sans-serif;
+      text-decoration: none;
+    }
+    .sidebar-link-list li > a:hover,
+    .sidebar-link-list li > button:hover {
+      background: #0E0E0E !important;
+    }
+    .sidebar-link-list li > a.active,
+    .sidebar-link-list li > button.active {
+      background: #0E0E0E !important; color: var(--color-text-primary);
+    }
+    .sidebar-link-list li > a img,
+    .sidebar-link-list li > button img {
+      width: 19px; height: 19px; object-fit: contain; margin-right: 8px;
+    }
+    .sidebar-link-list li > button {
+      position: relative; padding-right: 24px;
+    }
+    .sidebar-link-list li > button::after {
+      content: "\f107"; position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%); border: 0;
+      font-family: "Font Awesome 6 Free"; font-weight: 900;
+      font-size: 12px; color: #d6d9df; transition: 0.4s all ease;
+    }
+    .sidebar-link-list li > button.active::after {
+      transform: translateY(-50%) rotate(180deg);
+    }
+    /* Submenus toggle via JS click on expanded sidebar */
+
+    .sidebar-link-list li .sub-menu { display: none; margin-top: 5px; }
+    .sidebar-link-list li .sub-menu ul li > a {
+      padding-left: 25px; padding-right: 10px; transition: 0.4s all ease;
+    }
+    .sidebar-link-list li .sub-menu ul li > a:hover { background: #262e43; }
+
+    #of-top-menu {
+      position: relative; color: white; padding-left: 18px;
+      padding-top: 15px; padding-bottom: 15px; background-color: #171717cc;
+    }
+    #of-top-menu .of-badge {
+      position: absolute; right: 40px; width: 11px; height: 11px;
+      background-color: #FB609F; border-radius: 50%; display: inline-block;
+    }
+
+    #messages-menu { position: relative; }
+    #messages-menu .messages-pro-badge {
+      position: absolute; right: 42px; width: 15px; height: 15px;
+      padding-top: 0; text-align: center; border-radius: 50%;
+      background-color: #FB609F; color: white; font-size: 12px;
+      line-height: 1.4; top: 13px; font-weight: initial;
+    }
+    #messages-menu .messages-right-icon {
+      position: absolute; width: 26px; height: 26px; right: 0; display: block;
+    }
+
+    .sidebar-main hr { color: #171717; opacity: 1; }
+
+    .version {
+      font-size: 14px; line-height: 1.25; color: #888ea0;
+      padding-left: 12px; margin-top: 20px; font-weight: bold;
+    }
+
+    .help-center-link {
+      padding: 10px 12px; display: flex; align-items: center;
+      font-size: 19px; line-height: 18px; color: var(--color-text-secondary); width: 100%;
+      background: transparent; border: 0; border-radius: 10px;
+      font-weight: bold; text-decoration: none;
+    }
+    .help-center-link img { width: 19px; height: 19px; object-fit: contain; margin-right: 8px; }
+
+    /* ===== MAIN CONTENT ===== */
+    .dashboard-content {
+      width: calc(100% - var(--nav-width-expanded)); height: calc(100vh - 48px);
+      background: var(--color-bg-surface-2); border-top-left-radius: 16px;
+      overflow-y: scroll; padding: var(--space-small);
+    }
+    .dashboard-content::-webkit-scrollbar { width: 10px; background-color: transparent; }
+    .dashboard-content::-webkit-scrollbar-track { background-color: transparent; border-radius: 10px; }
+    .dashboard-content::-webkit-scrollbar-thumb { border-radius: 10px; background-color: #c7c8ca; }
+
+    /* ===== CARDS ===== */
+    .main-card-wrap {
+      padding: var(--space-small) var(--space-medium); border-radius: var(--radius-surface);
+      background: var(--color-bg-surface-3); margin-bottom: var(--space-small);
+    }
+    .main-card-heading {
+      display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; margin-bottom: 15px;
+    }
+    .main-card-heading h4 {
+      font-family: "Inter", sans-serif; font-size: 16px; line-height: 1.25;
+      font-weight: 500; display: flex; align-items: self-end;
+    }
+    .main-card-heading h4 .tooltip-custom { margin-left: 10px; margin-bottom: 1px; }
+    .main-card-heading h4 span.utc {
+      font-size: 14px; color: #bbb; margin-left: 15px; font-family: "Inter", sans-serif;
+    }
+
+    /* Filter buttons */
+    .header-filter { display: flex; align-items: center; }
+    .header-shown_by {
+      background-color: var(--color-bg-surface-2); height: 33px; font-size: 14px;
+      margin-top: 1px; margin-right: var(--space-small); padding-top: 7px;
+      padding-left: 10px; width: 130px; border-radius: var(--space-nano);
+      color: var(--color-text-muted); position: relative; cursor: pointer;
+    }
+    .header-shown_by .dropdown-btn {
+      background: transparent; border: 0; color: #bbb; font-size: 12px;
+      font-family: "Inter", sans-serif; outline: none; width: 100%;
+      cursor: pointer; text-align: left; padding: 0;
+      -webkit-appearance: none; appearance: none;
+    }
+    .header-shown_by .dropdown-btn::after {
+      content: "\f107"; font-family: "Font Awesome 6 Free"; font-weight: 900;
+      font-size: 10px; margin-left: 6px; color: #bbb;
+    }
+    .header-shown_by .dropdown-list {
+      display: none; position: absolute; top: 100%; left: 0;
+      background: var(--color-bg-surface-3); border-radius: 5px; overflow: hidden;
+      z-index: 100; min-width: 130px; padding: 3px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5); margin-top: 2px;
+    }
+    .header-shown_by .dropdown-list.open { display: block; }
+    .header-shown_by .dropdown-list a {
+      display: block; font-size: 13.6px; line-height: 38px;
+      color: #C4D1C7; padding: 0 12px; text-decoration: none;
+      background-color: var(--color-bg-surface-3); white-space: nowrap;
+      font-family: var(--font-text);
+    }
+    .header-shown_by .dropdown-list a:hover,
+    .header-shown_by .dropdown-list a.active {
+      background: var(--color-bg-hover);
+    }
+
+    .time-selector {
+      border: 1px solid #444444; padding: 5px 8px;
+      display: inline-flex; align-items: center;
+      border-radius: 4px; column-gap: 4px;
+    }
+    .time-selector li button {
+      text-align: center; color: #bbb; font-size: 11.5px; line-height: 1;
+      padding: 7px 20px 5px; font-weight: 600; border: 0;
+      background: transparent; border-radius: 2px;
+      font-family: 'Segoe UI', sans-serif; cursor: pointer;
+    }
+    .time-selector li.active button {
+      background: #353535; color: #2d74ff;
+    }
+    .time-selector li button:hover { color: #2d74ff; }
+
+    /* ===== OVERVIEW CARDS ===== */
+    .main-card-content { display: flex; flex-wrap: wrap; }
+    .main-card-content .overview-col {
+      padding: 20px 35px; border-right: 1px solid #464646; width: 25%;
+    }
+    .main-card-content .overview-col:last-child { border-right: 0; }
+
+    .overview-col .overview-inner { padding: 4px 0; }
+    .overview-col .overview-inner img { width: 44px; margin-bottom: 20px; }
+    .overview-col .overview-inner p {
+      font-size: 12px; line-height: 1.2; color: #1890F1;
+      font-weight: 600; margin-bottom: var(--space-small); font-family: "Segoe UI", sans-serif;
+    }
+    .overview-col .overview-inner h5 {
+      font-family: system-ui; letter-spacing: -0.9px;
+      font-size: 32px; line-height: 1.2; color: #2d74ff; font-weight: 700;
+    }
+    .overview-col .overview-inner h5 .dollar-sign {
+      font-size: 24px; color: #2d74ff; line-height: 48px;
+      vertical-align: middle; font-family: "Inter", sans-serif;
+      position: relative; top: -1px; left: -1px;
+    }
+
+    .overview-card {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 55px;
+    }
+    .overview-card:last-child { margin-bottom: 0; }
+    .overview-card .card-content { padding-right: 15px; width: calc(100% - 45px); }
+    .overview-card .card-content h5 {
+      font-family: system-ui; letter-spacing: -0.9px;
+      font-size: 21px; line-height: 1.2; color: white;
+      font-weight: 700; margin-bottom: 2px;
+    }
+    .overview-card .card-content p { font-size: 13px; line-height: 1.2; color: var(--color-text-tertiary); }
+    .overview-card > img {
+      width: 45px; height: 45px; object-fit: contain; border-radius: 50%;
+    }
+
+    /* ===== NO DATA STATES ===== */
+    .main-card-content.nodata {
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; padding: 40px 0;
+    }
+    .main-card-content.nodata img { width: 110px; margin: 0 auto 10px; }
+    .main-card-content.nodata p { font-size: 14px; line-height: 1.2; color: var(--color-text-tertiary); }
+
+    /* ===== BOTTOM SECTION ===== */
+    .col-lg-3.charts {
+      display: flex; width: 100% !important;
+      background-color: var(--color-bg-surface-2); padding-right: 0;
+    }
+    .main-card-wrap.charts { width: 240px; }
+    .main-card-wrap.charts1 { width: 98%; margin-left: 15px; margin-top: 15px; }
+
+    /* ===== EMPLOYEE SALES CHART ===== */
+    #employee-sales {
+      width: 98%; height: 400px; margin-left: var(--space-small);
+      background-color: var(--color-bg-surface-3); border-radius: var(--radius-surface);
+      position: relative; overflow: hidden;
+    }
+    .chart-title {
+      position: absolute; top: 17px; left: 20px; z-index: 2;
+      font-size: 15px; font-weight: 500; color: var(--color-text-primary);
+      font-family: var(--font-text); display: flex; align-items: center; gap: 10px;
+    }
+
+    /* ===== EMPLOYEE BADGES ===== */
+    .employee-badge {
+      display: inline-block; background-color: var(--color-bg-surface-2); color: var(--color-text-primary);
+      padding: 3px 4px 0 4px; margin: 3px; border-radius: 6px;
+      font-size: 14px; cursor: pointer; user-select: none; text-align: center;
+      transition: background-color 0.2s, transform 0.2s; font-family: var(--font-text);
+    }
+    .employee-badge:hover {
+      background-color: var(--color-bg-hover); transform: scale(1.05);
+    }
+    .employee-badge[contenteditable="true"] {
+      background-color: var(--color-brand-orange); outline: 2px solid var(--color-brand-orange);
+      outline-offset: 2px; cursor: text; user-select: text;
+    }
+
+    /* ===== STICKY CHAT BUTTON ===== */
+    .sticky-button {
+      position: fixed; bottom: 16px; right: 22px; width: 48px; height: 48px;
+      background-color: #000000; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; cursor: pointer;
+      z-index: 9999; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .sticky-button img { width: 30px; height: 30px; object-fit: contain; }
+
+    .row { display: flex; flex-wrap: wrap; width: 100%; }
+    .col-12 { width: 100%; }
+
+    /* ===== SIDEBAR COLLAPSE (.menu-close) ===== */
+    .dashboard-sidebar,
+    .dashboard-content {
+      transition: width 0.3s ease;
+    }
+    .menu-close .sidebar-logo-wrap {
+      flex-direction: column; padding: 0;
+    }
+    .menu-close .dashboard-sidebar {
+      width: var(--nav-width); padding-left: 7px; padding-right: 10px; overflow: unset;
+    }
+    .menu-close .dashboard-content {
+      width: calc(100% - var(--nav-width));
+    }
+    .menu-close .sidebar-link-list li {
+      position: relative; z-index: 1; margin-bottom: 3px;
+    }
+    .menu-close .sidebar-link-list li > a,
+    .menu-close .sidebar-link-list li > button {
+      font-size: 0; justify-content: center;
+      padding: 8.5px 6px; border-radius: 8px;
+      font-family: "Inter", sans-serif;
+    }
+    .menu-close .sidebar-link-list li > button::after { display: none; }
+    .menu-close .sidebar-link-list li > a img,
+    .menu-close .sidebar-link-list li > button img {
+      width: 19px; height: 19px; object-fit: contain; margin-right: 0;
+    }
+    .menu-close .sidebar-link-list li:hover > a,
+    .menu-close .sidebar-link-list li:hover > button {
+      background: #000000 !important;
+    }
+    .menu-close .sidebar-link-list li .sub-menu {
+      position: absolute; left: 100%; top: 0; width: 250px;
+      padding: 0 0 0 10px; margin: 0; display: none !important;
+      border-radius: 5px; overflow: hidden;
+    }
+    .menu-close .sidebar-link-list li .sub-menu ul {
+      max-height: 440px; overflow-y: auto; overflow-x: hidden;
+      background: #000; border-radius: 5px; padding: 10px 5px;
+    }
+    .menu-close .sidebar-link-list li .sub-menu li a {
+      font-size: 18px; border-radius: 5px; justify-content: flex-start;
+      padding-left: 5px; padding-right: 5px; padding-top: 10px; padding-bottom: 10px;
+    }
+    .menu-close .sidebar-link-list li .sub-menu li a img { margin-right: 8px; }
+    .menu-close .sidebar-link-list li .sub-menu li a:hover { background: #000000; }
+    .menu-close .sidebar-link-list li:hover .sub-menu { display: block !important; }
+    .menu-close .version { display: none; }
+    .menu-close #messages-menu .messages-right-icon { display: none; }
+    .menu-close #messages-menu .messages-pro-badge { display: none; }
+    .menu-close #of-top-menu { padding-left: 10px !important; }
+    .menu-close #of-top-menu .of-badge { display: none; }
+
+    /* ===== MODAL STYLES ===== */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 10000;
+      justify-content: center; align-items: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: #111113; border-radius: 16px; width: 460px;
+      max-height: 90vh; overflow-y: auto; padding: 0;
+      position: relative; border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+    .modal-box::-webkit-scrollbar { width: 4px; }
+    .modal-box::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    .settings-header {
+      padding: 24px 28px 0; display: flex; align-items: center; justify-content: space-between;
+    }
+    .settings-header h2 {
+      font-size: 16px; font-weight: 600; color: #fff; margin: 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .settings-header h2 svg { opacity: 0.5; }
+    .settings-tabs {
+      display: flex; gap: 0; padding: 16px 28px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .settings-tab {
+      padding: 8px 16px 12px; font-size: 13px; color: #666; cursor: pointer;
+      border-bottom: 2px solid transparent; transition: all 0.2s; font-weight: 500;
+    }
+    .settings-tab.active { color: #fff; border-bottom-color: var(--color-primary); }
+    .settings-tab:hover:not(.active) { color: #999; }
+    .settings-body { padding: 20px 28px 24px; }
+    .settings-section {
+      margin-bottom: 20px;
+    }
+    .settings-section-title {
+      font-size: 11px; font-weight: 600; color: #555; text-transform: uppercase;
+      letter-spacing: 0.8px; margin-bottom: 12px;
+    }
+    .settings-field {
+      margin-bottom: 12px;
+    }
+    .settings-field label {
+      font-size: 12px; color: #888; margin-bottom: 5px; display: block; font-weight: 500;
+    }
+    .settings-field input,
+    .settings-field select {
+      width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      color: #e0e0e0; padding: 9px 12px; border-radius: 8px; font-size: 13px;
+      font-family: var(--font-text); outline: none; transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .settings-field input:focus,
+    .settings-field select:focus { border-color: rgba(99,130,255,0.5); background: rgba(255,255,255,0.06); }
+    .settings-field select option { background: #1a1a1e; color: #e0e0e0; }
+    .settings-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    .settings-toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .settings-toggle-row label { margin: 0; color: #ccc; font-size: 13px; font-weight: 500; }
+    .settings-toggle-row .toggle-switch { background-color: #333; }
+    .settings-divider {
+      height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0;
+    }
+    .settings-actions {
+      display: flex; gap: 8px; padding: 0 28px 24px;
+    }
+    .settings-actions a {
+      flex: 1; padding: 10px 0; border-radius: 8px; font-size: 13px;
+      font-weight: 600; cursor: pointer; text-decoration: none;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.2s;
+    }
+    .settings-actions .calculate-btn {
+      background: var(--color-primary); color: #fff;
+    }
+    .settings-actions .calculate-btn:hover { background: #2a55dd; }
+    .settings-actions .random-btn {
+      background: rgba(255,255,255,0.06); color: #ccc; border: 1px solid rgba(255,255,255,0.08);
+    }
+    .settings-actions .random-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .settings-actions .logout-btn {
+      background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.15);
+      flex: 0; padding: 10px 16px;
+    }
+    .settings-actions .logout-btn:hover { background: rgba(239,68,68,0.2); }
+    .modal-close {
+      width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: #666; cursor: pointer; background: rgba(255,255,255,0.05);
+      border: none; border-radius: 6px; transition: all 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .modal-close:hover { color: white; }
+
+    /* ===== MANAGE EMPLOYEES PAGE ===== */
+    /* Real Aura tc- variables mapped:
+       --tc-B-nav: #151515  (page/table body bg)
+       --tc-B1: #262626     (table header bg, cards)
+       --tc-M-B1: #2f2f2f   (modal/input bg)
+       --tc-T0: #ffffff      --tc-T1: #d9d9d9
+       --tc-T3: #999999      --tc-T4: #666666
+       --tc-L1: #444444      --tc-modal-border: #353535
+       --tc-M1: #3467ff      --tc-A1: #2ad4ac
+       --tc-W1: #ffa15f      --tc-D1: #ff7c71
+       --tc-B-model-hover: #353535
+    */
+    .emp-page { display: none; flex: 1; flex-direction: column; height: calc(100vh - 46px); overflow: hidden; }
+    .emp-page.active { display: flex; }
+    .emp-page-layout {
+      display: flex; width: 100%; flex: 1; overflow: hidden; position: relative;
+    }
+    /* Left sidebar - employee list */
+    .emp-sidebar {
+      width: 220px; min-width: 220px; border-right: 1px solid #2a2a2a;
+      background: #262626; display: flex; flex-direction: column;
+      height: 100%; overflow: hidden;
+    }
+    .emp-sidebar-header {
+      display: none;
+    }
+    .emp-sidebar-search {
+      display: none;
+    }
+    .emp-sidebar-search input {
+      width: 100%; background: #2f2f2f; border: 1px solid #8a96a340;
+      color: #ffffff; padding: 7px 10px; border-radius: 4px;
+      font-size: 13px; font-family: var(--font-text); outline: none;
+    }
+    .emp-sidebar-search input:focus { border-color: #3467ff; }
+    .emp-sidebar-search input::placeholder { color: #666666; }
+    .emp-sidebar-list {
+      flex: 1; overflow-y: auto; padding: 0;
+    }
+    /* Loading spinner */
+    .emp-sidebar-loading, .emp-table-loading, .dash-loading {
+      display: flex; align-items: flex-start; justify-content: center;
+      width: 100%; padding-top: 60px;
+    }
+    .emp-sidebar-loading { height: 100%; }
+    .dash-loading {
+      padding-top: 0; align-items: center; justify-content: center; height: 100%;
+    }
+    .emp-spinner {
+      width: 24px; height: 24px; animation: empSpinRotate 1.2s linear infinite;
+      position: relative;
+    }
+    .emp-spinner span {
+      width: 7px; height: 7px; border-radius: 50%; background: #3467ff;
+      position: absolute;
+    }
+    .emp-spinner span:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); opacity: 1; }
+    .emp-spinner span:nth-child(2) { top: 50%; right: 0; transform: translateY(-50%); opacity: 0.7; }
+    .emp-spinner span:nth-child(3) { bottom: 0; left: 50%; transform: translateX(-50%); opacity: 0.4; }
+    .emp-spinner span:nth-child(4) { top: 50%; left: 0; transform: translateY(-50%); opacity: 0.2; }
+    @keyframes empSpinRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .emp-sidebar-list::-webkit-scrollbar { width: 4px; }
+    .emp-sidebar-list::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+    .emp-sidebar-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px; margin: 6px 6px 6px 20px; cursor: pointer; transition: background 0.12s;
+      border-radius: 6px; background: #2f2f2f; border: 1px solid #3a3a3a;
+    }
+    .emp-sidebar-item:hover { background: #1e1e1e; }
+    .emp-sidebar-item.selected {
+      background: #2f2f2f; border-color: #3a3a3a;
+    }
+    .emp-sidebar-item .emp-sb-avatar {
+      display: none;
+    }
+    .emp-sidebar-item .emp-sb-name {
+      font-size: 16px; font-weight: 900; color: #d9d9d9; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; flex: 1;
+    }
+    .emp-sidebar-item .emp-sb-dots {
+      color: #aaa; cursor: pointer; font-size: 16px;
+      opacity: 1; padding: 0; margin-right: -6px;
+    }
+    .emp-sidebar-item:hover .emp-sb-dots { color: #999; }
+    /* Right content area */
+    .emp-main {
+      flex: 1; display: flex; flex-direction: column; overflow: hidden;
+      background: #121212;
+    }
+    .emp-main-header {
+      padding: 16px 24px; border-bottom: none;
+    }
+    .emp-main-title-row {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+    }
+    .emp-main-title {
+      font-size: 16px; font-weight: 500; color: #ffffff;
+    }
+    .emp-main-actions { display: flex; gap: 10px; }
+    .emp-btn-batch {
+      background: transparent; color: #3467ff; border: 1px solid #3467ff;
+      padding: 7px 16px; border-radius: 4px; font-size: 13px; cursor: pointer;
+      font-family: var(--font-text); display: flex; align-items: center; gap: 6px;
+      font-weight: 500;
+    }
+    .emp-btn-batch:hover { background: rgba(52,103,255,0.08); }
+    .emp-btn-add {
+      background: #3467ff; color: #fff; border: none;
+      padding: 7px 16px; border-radius: 4px; font-size: 13px; font-weight: 500;
+      cursor: pointer; font-family: var(--font-text);
+    }
+    .emp-btn-add:hover { background: #2148d9; }
+    /* Filter bar */
+    .emp-filter-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .emp-filter-bar label {
+      font-size: 13px; color: #999; font-weight: 400; white-space: nowrap;
+    }
+    .emp-filter-bar input,
+    .emp-filter-bar select {
+      background: #1a1a1a; border: 1px solid #333;
+      color: #888; padding: 7px 12px; border-radius: 4px;
+      font-size: 13px; font-family: var(--font-text); outline: none; min-width: 180px;
+    }
+    .emp-filter-bar select {
+      -webkit-appearance: none; appearance: none; padding-right: 28px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' fill='none' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+    }
+    .emp-filter-bar input:focus,
+    .emp-filter-bar select:focus { border-color: #3467ff; }
+    .emp-filter-bar select option { background: #1a1a1a; color: #d9d9d9; }
+    .emp-filter-bar input::placeholder { color: #999; }
+    .emp-filter-spacer { flex: 1; }
+    .emp-btn-reset {
+      background: transparent; color: #d9d9d9; border: 1px solid #444;
+      padding: 7px 18px; border-radius: 4px; font-size: 13px; cursor: pointer; font-family: var(--font-text);
+    }
+    .emp-btn-reset:hover { background: #1e1e1e; }
+    .emp-btn-search {
+      background: #3467ff; color: #fff; border: none;
+      padding: 7px 18px; border-radius: 4px; font-size: 13px; cursor: pointer;
+      font-family: var(--font-text); font-weight: 500;
+    }
+    .emp-btn-search:hover { background: #2148d9; }
+    /* Table */
+    .emp-table-wrap {
+      flex: 1; overflow-y: auto; padding: 0 24px; background: #121212;
+    }
+    .emp-table-wrap::-webkit-scrollbar { width: 6px; }
+    .emp-table-wrap::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    .emp-table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+    }
+    .emp-table thead tr {
+    }
+    .emp-table thead th {
+      text-align: left; padding: 12px 20px; font-size: 13px; font-weight: 500;
+      color: #9a9a9a; background: #2f2f2f;
+      border-bottom: 1px solid #444;
+      position: sticky; top: 0; z-index: 1; position: relative;
+    }
+    .emp-table thead th:first-child {
+      border-top-left-radius: 8px;
+      padding-left: 20px; width: 40px;
+    }
+    .emp-table thead th:last-child {
+      border-top-right-radius: 8px;
+    }
+    .emp-table thead th::after {
+      content: ''; position: absolute; right: 0; top: 25%; height: 50%;
+      width: 1px; background: #444;
+    }
+    .emp-table thead th:last-child::after { display: none; }
+    .emp-table tbody tr {
+      border-bottom: 1px solid #333; transition: background 0.12s;
+    }
+    .emp-table tbody tr:hover { background: #1a1a1a; }
+    .emp-table tbody td {
+      padding: 14px 20px; font-size: 14px; color: #d9d9d9; vertical-align: middle;
+      background: transparent; position: relative;
+    }
+    .emp-table tbody td::after {
+      content: ''; position: absolute; right: 0; top: 25%; height: 50%;
+      width: 1px; background: #333;
+    }
+    .emp-table tbody td:last-child::after { display: none; }
+    .emp-table tbody td:first-child { padding-left: 20px; width: 40px; }
+    .emp-table tbody td.emp-role-cell { color: #888; }
+    .emp-table input[type="checkbox"] {
+      -webkit-appearance: none; appearance: none;
+      width: 16px; height: 16px; cursor: pointer;
+      background: transparent; border: 1.5px solid #2a2a2a; border-radius: 3px;
+      position: relative; vertical-align: middle;
+    }
+    .emp-table thead input[type="checkbox"] {
+      border-color: #1e1e1e; background: #1a1a1a;
+    }
+    .emp-table tbody input[type="checkbox"] {
+      border-color: transparent; background: #1e1e1e;
+    }
+    .emp-table input[type="checkbox"]:checked {
+      background: #3467ff; border-color: #3467ff;
+    }
+    .emp-table input[type="checkbox"]:checked::after {
+      content: '✓'; position: absolute; top: -1px; left: 2px;
+      font-size: 12px; color: #fff; font-weight: 700;
+    }
+    .emp-creators-cell {
+      color: #777; font-size: 13px; cursor: pointer;
+    }
+    .emp-creators-cell:hover { color: #bbb; }
+    .emp-creators-names {
+      color: #4a90ff; font-size: 13px; cursor: pointer;
+    }
+    .emp-creators-names:hover { color: #6aa8ff; }
+    .emp-status-text { font-size: 13px; font-weight: 400; }
+    .emp-status-text.activated { color: #00c48c; }
+    .emp-status-text.pending { color: #ffa15f; }
+    .emp-status-text.deactivated { color: #666; }
+    .emp-action-link {
+      background: none; border: none; color: #999;
+      font-size: 13px; cursor: pointer; font-family: var(--font-text); padding: 2px 6px;
+    }
+    .emp-action-link:hover { color: #ffffff; }
+    .emp-empty {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 60px 24px; color: #999999; flex: 1; background: #121212;
+    }
+    .emp-empty i { font-size: 40px; margin-bottom: 12px; opacity: 0.3; }
+    .emp-empty p { font-size: 14px; }
+    .emp-role-checkboxes {
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    }
+    .emp-role-checkboxes label {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 13px; color: #d9d9d9; cursor: pointer;
+    }
+    .emp-role-checkboxes input[type="checkbox"] {
+      accent-color: #3467ff; width: 14px; height: 14px; cursor: pointer;
+    }
+    .emp-add-role-btn {
+      background: none; border: 1px solid #555; color: #888; border-radius: 4px;
+      padding: 4px 10px; font-size: 12px; cursor: pointer; font-family: var(--font-text);
+      margin-top: 6px;
+    }
+    .emp-add-role-btn:hover { border-color: #3467ff; color: #3467ff; }
+    /* Creator/model management in modal */
+    .emp-creators-section { margin-top: 2px; }
+    .emp-creators-section label.section-label {
+      font-size: 13px; color: #999; display: block; margin-bottom: 6px;
+    }
+    .emp-creators-tags {
+      display: flex; gap: 6px; flex-wrap: wrap; align-items: center; min-height: 30px;
+    }
+    .emp-creator-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #1a2a4a; color: #4a90ff; border: 1px solid #2a4a7a; border-radius: 4px;
+      padding: 3px 8px; font-size: 12px; font-family: var(--font-text);
+    }
+    .emp-creator-tag .remove-tag {
+      cursor: pointer; color: #6a8abf; font-size: 14px; line-height: 1;
+      margin-left: 2px;
+    }
+    .emp-creator-tag .remove-tag:hover { color: #ff5555; }
+    .emp-creator-assign-btn {
+      background: none; border: 1px dashed #555; color: #888; border-radius: 4px;
+      padding: 3px 10px; font-size: 12px; cursor: pointer; font-family: var(--font-text);
+    }
+    .emp-creator-assign-btn:hover { border-color: #3467ff; color: #3467ff; }
+    .emp-model-create-row {
+      display: flex; gap: 6px; align-items: center; margin-top: 8px;
+    }
+    .emp-model-create-row input {
+      flex: 1; padding: 5px 10px; font-size: 12px;
+    }
+    .emp-model-create-row button {
+      background: #3467ff; color: #fff; border: none; border-radius: 4px;
+      padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: var(--font-text);
+      white-space: nowrap;
+    }
+    .emp-model-create-row button:hover { background: #2148d9; }
+    /* Creator dropdown picker */
+    .emp-creator-picker {
+      position: absolute; background: #2a2a2a; border: 1px solid #444; border-radius: 6px;
+      padding: 6px 0; z-index: 9999; min-width: 180px; max-height: 200px; overflow-y: auto;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    }
+    .emp-creator-picker .picker-item {
+      display: flex; align-items: center; gap: 8px; padding: 6px 14px;
+      font-size: 13px; color: #d9d9d9; cursor: pointer;
+    }
+    .emp-creator-picker .picker-item:hover { background: #353535; }
+    .emp-creator-picker .picker-item input { accent-color: #3467ff; width: 14px; height: 14px; }
+    .emp-creator-picker .picker-empty {
+      padding: 10px 14px; font-size: 12px; color: #666; text-align: center;
+    }
+    /* Add employee modal */
+    .emp-add-modal {
+      background: #2f2f2f; border-radius: 10px; width: 480px;
+      padding: 0; position: relative; overflow: hidden;
+    }
+    .emp-add-modal h3 {
+      font-size: 16px; font-weight: 600; margin: 0; color: #ffffff;
+      padding: 15px 24px; border-bottom: 1px solid #353535;
+    }
+    .emp-add-modal .emp-form-body {
+      padding: 24px 16px; background: #262626;
+      border-bottom: 1px solid #353535;
+    }
+    .emp-add-modal .emp-form-row {
+      display: flex; gap: 12px; margin-bottom: 14px;
+    }
+    .emp-add-modal .emp-form-row:last-child { margin-bottom: 0; }
+    .emp-add-modal input,
+    .emp-add-modal select {
+      flex: 1; background: #2f2f2f; border: 1px solid #8a96a340;
+      color: #ffffff; padding: 9px 12px; border-radius: 4px;
+      font-size: 13px; font-family: var(--font-text); outline: none;
+    }
+    .emp-add-modal input::placeholder { color: #666666; }
+    .emp-add-modal input:focus,
+    .emp-add-modal select:focus { border-color: #3467ff; }
+    .emp-add-modal select option { background: #2f2f2f; color: #d9d9d9; }
+    .emp-add-modal .emp-form-footer {
+      display: flex; gap: 10px; justify-content: flex-end;
+      padding: 15px 24px; background: #2f2f2f;
+    }
+    .emp-add-modal .emp-form-footer button {
+      padding: 8px 20px; border-radius: 4px; font-size: 13px; cursor: pointer;
+      font-family: var(--font-text); border: none;
+    }
+    .emp-add-modal .emp-cancel-btn {
+      background: transparent; color: #d9d9d9;
+      border: 1px solid #8a96a340;
+    }
+    .emp-add-modal .emp-cancel-btn:hover { background: #353535; }
+    .emp-add-modal .emp-save-btn {
+      background: #3467ff; color: #fff; font-weight: 500;
+    }
+    .emp-add-modal .emp-save-btn:hover { background: #2148d9; }
+
+    /* ===== AVATAR MODAL ===== */
+    .avatar-modal-box {
+      background: var(--color-bg-surface-1); border-radius: var(--radius-surface); width: 420px;
+      padding: var(--space-medium); position: relative; border: 1px solid var(--color-border);
+    }
+    .avatar-modal-box h2 {
+      text-align: center; margin-bottom: 20px; font-weight: 600; font-size: 16px;
+    }
+    .avatar-list {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      justify-content: center; margin-bottom: 16px;
+    }
+    .avatar-list img {
+      width: 50px; height: 50px; border-radius: 50%; cursor: pointer;
+      transition: transform 0.2s, border 0.2s; border: 2px solid transparent;
+      object-fit: cover;
+    }
+    .avatar-list img:hover { transform: scale(1.1); border: 2px solid #007BFF; }
+    .avatar-list img.selected { border: 2px solid #28a745; }
+    .upload-row {
+      display: flex; align-items: center; gap: 10px; justify-content: center;
+      margin-top: 12px;
+    }
+    .upload-row label {
+      background: var(--color-primary); color: white; padding: 8px 16px; border-radius: 6px;
+      cursor: pointer; font-size: 13px; font-weight: 600;
+    }
+    .upload-row input[type="file"] { display: none; }
+    .upload-row button {
+      background: var(--color-success); color: white; padding: 8px 16px; border-radius: 6px;
+      border: none; cursor: pointer; font-size: 13px; font-weight: 600;
+    }
+
+    /* Employee count button */
+    .employee-count-btn {
+      color: white !important; font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .employee-count-btn img { width: 18px; height: 18px; margin-right: 5px; }
+
+    /* ===== ANALYTICS PAGE ===== */
+    .analytics-page { display: none; flex: 1; flex-direction: column; height: calc(100vh - 48px); overflow-y: auto; background: var(--color-bg-surface-2); border-top-left-radius: var(--radius-surface); }
+    .analytics-page.active { display: flex; }
+    .analytics-page::-webkit-scrollbar { width: 10px; background-color: transparent; }
+    .analytics-page::-webkit-scrollbar-thumb { border-radius: 10px; background-color: #c7c8ca; }
+    .analytics-top-bar {
+      display: flex; align-items: center; justify-content: space-between; padding: 14px 20px;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .analytics-date-range {
+      display: flex; align-items: center; gap: 8px; background: var(--color-bg-surface-3);
+      padding: 8px 14px; border-radius: var(--radius-control); border: 1px solid var(--color-border);
+    }
+    .analytics-date-range input[type="date"] {
+      background: transparent; border: none; color: var(--color-text-primary); font-family: var(--font-text);
+      font-size: 13px; outline: none; cursor: pointer;
+    }
+    .analytics-date-range input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+    .analytics-date-range span { color: var(--color-text-tertiary); font-size: 13px; }
+    .analytics-top-actions { display: flex; align-items: center; gap: 10px; }
+    .analytics-top-actions .btn-shown-by {
+      background: var(--color-bg-surface-3); border: 1px solid var(--color-border); color: var(--color-text-muted);
+      padding: 8px 14px; border-radius: var(--radius-control); font-size: 13px; cursor: pointer; font-family: var(--font-text);
+    }
+    .analytics-top-actions .btn-time-earning {
+      background: var(--color-bg-surface-3); border: 1px solid var(--color-border); color: var(--color-text-muted);
+      padding: 8px 14px; border-radius: var(--radius-control); font-size: 13px; cursor: pointer; font-family: var(--font-text);
+    }
+    .analytics-top-actions .btn-filter {
+      background: var(--color-primary); border: none; color: #fff; padding: 8px 18px;
+      border-radius: var(--radius-control); font-size: 13px; cursor: pointer; font-weight: 500; font-family: var(--font-text);
+    }
+    .analytics-top-actions .btn-filter:hover { background: #2a55dd; }
+
+    /* Analytics sidebar (creator account context) */
+    .analytics-sidebar-section {
+      display: none; width: 100%; flex-direction: column;
+    }
+    .analytics-sidebar-section.active { display: flex; }
+    .analytics-total-earning {
+      padding: 10px 12px; font-family: var(--font-mono); font-size: 26px; font-weight: 700;
+      color: var(--color-success); letter-spacing: -0.5px;
+    }
+
+    /* Earnings cards for analytics (reuse dashboard style) */
+    .analytics-earnings { padding: 0 16px 16px; }
+
+    /* ===== EARNINGS TRENDS (stacked bar chart) ===== */
+    .analytics-section {
+      background: var(--color-bg-surface-3); border-radius: var(--radius-surface);
+      margin: 0 16px 16px; padding: 20px;
+    }
+    .analytics-section-title {
+      font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .analytics-section-title .tooltip-custom { margin-bottom: 1px; }
+
+    /* Earnings trends bars */
+    .trends-chart { width: 100%; overflow-x: auto; }
+    .trends-chart-inner {
+      position: relative; height: 280px; min-width: 600px;
+      padding-bottom: 0;
+    }
+    .trend-bar-group {
+      flex: 1; display: flex; flex-direction: column; align-items: center; position: relative;
+    }
+    .trend-bar {
+      width: 100%; max-width: 20px; border-radius: 2px 2px 0 0; min-height: 2px;
+      transition: opacity 0.2s;
+    }
+    .trend-bar-group:hover .trend-bar { opacity: 0.8; }
+    .trend-bar-label {
+      position: absolute; bottom: -22px; font-size: 9px; color: var(--color-text-tertiary);
+      white-space: nowrap; text-align: center; width: 100%;
+    }
+    .trends-y-axis {
+      position: absolute; left: -5px; top: 0; bottom: 24px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .trends-y-label { font-size: 10px; color: var(--color-text-muted); font-family: var(--font-mono); text-align: right; }
+
+    /* Earnings by channel */
+    .channel-layout { display: flex; gap: 24px; align-items: flex-start; }
+    .channel-chart-area { flex: 1; min-height: 180px; position: relative; }
+    .channel-legend {
+      min-width: 260px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .channel-legend-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 6px 0; border-bottom: 1px solid var(--color-border-subtle);
+    }
+    .channel-legend-item:last-child { border-bottom: none; }
+    .channel-legend-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .channel-legend-name { font-size: 13px; color: var(--color-text-secondary); flex: 1; margin-left: 8px; }
+    .channel-legend-pct { font-size: 13px; color: var(--color-text-tertiary); font-family: var(--font-mono); min-width: 48px; text-align: right; }
+    .channel-legend-val { font-size: 13px; color: var(--color-text-primary); font-family: var(--font-mono); min-width: 80px; text-align: right; }
+
+    /* Earnings by channel SVG chart */
+    .channel-chart-svg { width: 100%; height: 180px; }
+
+    /* ===== EMPLOYEE COMPARISON ===== */
+    .comparison-selectors { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .comparison-selectors select {
+      background: var(--color-bg-surface-2); border: 1px solid var(--color-border); color: var(--color-text-muted);
+      padding: 8px 12px; border-radius: var(--radius-control); font-size: 13px; font-family: var(--font-text);
+      min-width: 130px; outline: none; cursor: pointer;
+    }
+    .comparison-selectors select option { background: var(--color-bg-surface-3); color: var(--color-text-primary); }
+    .comparison-chart { width: 100%; min-height: 220px; }
+    .comparison-empty {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 40px; color: var(--color-text-tertiary);
+    }
+    .comparison-empty img { width: 90px; margin-bottom: 12px; opacity: 0.6; }
+    .comparison-empty p { font-size: 14px; }
+    .comparison-bars { display: flex; align-items: flex-end; gap: 4px; height: 200px; padding-bottom: 24px; border-bottom: 1px solid var(--color-border); }
+    .comparison-bar {
+      flex: 1; background: var(--color-primary); border-radius: 2px 2px 0 0; min-height: 2px;
+      transition: opacity 0.2s; max-width: 22px; position: relative;
+    }
+    .comparison-bar:hover { opacity: 0.8; }
+
+    /* Chatting statistics */
+    .chatting-stats-bar {
+      display: flex; align-items: center; gap: 12px; margin-top: 16px; padding-top: 16px;
+      border-top: 1px solid var(--color-border);
+    }
+    .chatting-stats-bar label { font-size: 14px; color: var(--color-text-secondary); font-weight: 500; }
+
+    /* Right sidebar stats (analytics) */
+    .analytics-right-stats {
+      min-width: 180px; display: flex; flex-direction: column; gap: 6px;
+      padding: 16px 0;
+    }
+    .analytics-right-stat {
+      display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+    }
+    .analytics-right-stat .stat-val {
+      font-family: var(--font-mono); font-size: 14px; color: var(--color-text-primary); font-weight: 600;
+    }
+
+    /* ===== SMART LISTS PAGE ===== */
+    .smartlists-page { display: none; flex: 1; flex-direction: column; height: calc(100vh - 48px); overflow-y: auto; background: var(--color-bg-surface-2); border-top-left-radius: var(--radius-surface); }
+    .smartlists-page.active { display: flex; }
+    .smartlists-page::-webkit-scrollbar { width: 10px; }
+    .smartlists-page::-webkit-scrollbar-thumb { border-radius: 10px; background-color: #c7c8ca; }
+    .smartlists-header {
+      display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+      padding: 16px 20px; border-bottom: 1px solid var(--color-border);
+    }
+    .smartlists-header input[type="text"] {
+      background: var(--color-bg-surface-3); border: 1px solid var(--color-border); color: var(--color-text-primary);
+      padding: 8px 14px; border-radius: var(--radius-control); font-size: 13px; font-family: var(--font-text);
+      outline: none; width: 220px;
+    }
+    .smartlists-header input::placeholder { color: var(--color-text-tertiary); }
+    .smartlists-header .btn-create {
+      background: var(--color-primary); border: none; color: #fff; padding: 8px 18px;
+      border-radius: var(--radius-control); font-size: 13px; cursor: pointer; font-weight: 500; font-family: var(--font-text);
+    }
+    .smartlists-table { width: 100%; border-collapse: collapse; }
+    .smartlists-table thead th {
+      text-align: left; padding: 12px 20px; font-size: 13px; font-weight: 500;
+      color: var(--color-text-tertiary); background: var(--color-bg-surface-3);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .smartlists-table tbody tr { border-bottom: 1px solid var(--color-border-subtle); transition: background 0.12s; }
+    .smartlists-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+    .smartlists-table tbody td {
+      padding: 14px 20px; font-size: 14px; color: var(--color-text-secondary); vertical-align: middle;
+    }
+    .smartlists-table .sl-criteria { display: flex; align-items: center; gap: 8px; }
+    .smartlists-table .sl-icon { width: 16px; height: 16px; opacity: 0.6; }
+    .smartlists-table .sl-status { font-size: 13px; padding: 3px 10px; border-radius: 4px; }
+    .smartlists-table .sl-status.active { background: rgba(42,212,172,0.15); color: var(--color-success); }
+    .smartlists-table .sl-actions { display: flex; gap: 8px; }
+    .smartlists-table .sl-action-btn {
+      background: transparent; border: none; color: var(--color-text-tertiary); cursor: pointer;
+      font-size: 16px; padding: 4px; transition: color 0.15s;
+    }
+    .smartlists-table .sl-action-btn:hover { color: var(--color-text-primary); }
+
+    /* ===== SENSITIVE WORDS PAGE ===== */
+    .sensitivewords-page { display: none; flex: 1; flex-direction: column; height: calc(100vh - 48px); overflow-y: auto; background: var(--color-bg-surface-2); border-top-left-radius: var(--radius-surface); }
+    .sensitivewords-page.active { display: flex; }
+    .sensitivewords-page::-webkit-scrollbar { width: 10px; }
+    .sensitivewords-page::-webkit-scrollbar-thumb { border-radius: 10px; background-color: #c7c8ca; }
+    .sw-header {
+      display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+      padding: 14px 20px; border-bottom: 1px solid var(--color-border);
+    }
+    .sw-header .btn-import { background: transparent; border: 1px solid var(--color-border); color: var(--color-text-muted); padding: 7px 14px; border-radius: var(--radius-control); font-size: 13px; cursor: pointer; font-family: var(--font-text); }
+    .sw-header .btn-export { background: #dbfc54; border: none; color: #000; padding: 7px 14px; border-radius: var(--radius-control); font-size: 13px; cursor: pointer; font-weight: 600; font-family: var(--font-text); }
+    .sw-header .btn-add-word { background: var(--color-primary); border: none; color: #fff; padding: 7px 14px; border-radius: var(--radius-control); font-size: 13px; cursor: pointer; font-weight: 500; font-family: var(--font-text); }
+    .sw-alpha-filter {
+      display: flex; gap: 4px; padding: 12px 20px; flex-wrap: wrap; border-bottom: 1px solid var(--color-border-subtle);
+    }
+    .sw-alpha-btn {
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      background: var(--color-bg-surface-3); border: 1px solid var(--color-border); border-radius: 4px;
+      color: var(--color-text-muted); font-size: 12px; cursor: pointer; font-family: var(--font-text); font-weight: 600;
+      transition: all 0.15s;
+    }
+    .sw-alpha-btn:hover, .sw-alpha-btn.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+    .sw-special-btn {
+      padding: 0 10px; height: 30px; display: flex; align-items: center; justify-content: center;
+      background: var(--color-bg-surface-3); border: 1px solid var(--color-border); border-radius: 4px;
+      color: var(--color-text-muted); font-size: 12px; cursor: pointer; font-family: var(--font-text);
+    }
+    .sw-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px;
+      padding: 16px 20px;
+    }
+    .sw-card {
+      background: var(--color-bg-surface-3); border: 1px solid var(--color-border-subtle);
+      border-radius: 6px; padding: 10px 14px; font-size: 13px; color: var(--color-text-secondary);
+      cursor: default; transition: background 0.15s; text-align: center; word-break: break-word;
+    }
+    .sw-card:hover { background: var(--color-bg-hover); }
+    .sw-footer {
+      display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+      padding: 12px 20px; border-top: 1px solid var(--color-border); margin-top: auto;
+    }
+    .sw-footer label { font-size: 13px; color: var(--color-text-tertiary); }
+
+    /* ===== GROWTH SIDEBAR ===== */
+    .growth-sidebar-items { display: none; }
+    .growth-sidebar-items.active { display: block; }
+    .main-sidebar-items { display: block; }
+    .main-sidebar-items.hidden { display: none; }
+
+    /* Back button for sub-sidebars */
+    .sidebar-back-btn {
+      display: flex; align-items: center; gap: 8px; padding: 12px 12px; cursor: pointer;
+      color: var(--color-text-secondary); font-size: 14px; font-weight: 500; border: none;
+      background: transparent; width: 100%; font-family: var(--font-text); margin-bottom: 4px;
+    }
+    .sidebar-back-btn:hover { color: var(--color-text-primary); }
+    .sidebar-back-btn i { font-size: 12px; }
+
+    /* Analytics sidebar total */
+    .sidebar-total-earning {
+      padding: 4px 14px 16px; font-family: var(--font-mono); font-size: 24px;
+      font-weight: 700; color: var(--color-success); letter-spacing: -0.5px;
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="dashboard-wrap">
+    <!-- ===== TOP HEADER ===== -->
+    <div class="dashboard-header">
+      <div class="d-flex align-items-center">
+        <div class="sidebar-logo-wrap" style="width:auto">
+          <button type="button" class="menu-btn">
+            <img src="assets/hambuger-icon.png" alt="">
+          </button>
+        </div>
+      </div>
+      <div class="d-flex align-items-center">
+        <div class="operational" style="position:relative">
+          <p style="font-weight:bold;cursor:pointer;padding:6px 0;display:flex;align-items:center;color:white;font-size:14px">
+            <span class="status-dot"></span>
+            Operational
+          </p>
+          <ul class="dropdown-menu" style="display:none;position:absolute;top:100%;left:0;background-color:#262626;border-radius:5px;overflow:hidden;z-index:100;min-width:260px;padding:0;border:0;list-style:none">
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none"><span style="width:12px;height:12px;border-radius:50%;background-color:#58A744;margin-right:10px;display:inline-block"></span>Operational</a></li>
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none"><span style="width:12px;height:12px;border-radius:50%;background-color:#F88056;margin-right:10px;display:inline-block"></span>Partials Outage</a></li>
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none"><span style="width:12px;height:12px;border-radius:50%;background-color:#58A744;margin-right:10px;display:inline-block"></span>Proxy service</a></li>
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none"><span style="width:12px;height:12px;border-radius:50%;background-color:#58A744;margin-right:10px;display:inline-block"></span>Messages and notifications</a></li>
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none"><span style="width:12px;height:12px;border-radius:50%;background-color:#58A744;margin-right:10px;display:inline-block"></span>Growth tools</a></li>
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none"><span style="width:12px;height:12px;border-radius:50%;background-color:#58A744;margin-right:10px;display:inline-block"></span>Creator and employee management</a></li>
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none"><span style="width:12px;height:12px;border-radius:50%;background-color:#58A744;margin-right:10px;display:inline-block"></span>Billing and balances</a></li>
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none"><span style="width:12px;height:12px;border-radius:50%;background-color:#58A744;margin-right:10px;display:inline-block"></span>Share for share</a></li>
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none"><span style="width:12px;height:12px;border-radius:50%;background-color:#58A744;margin-right:10px;display:inline-block"></span>Affiliate manager</a></li>
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none"><span style="width:12px;height:12px;border-radius:50%;background-color:#58A744;margin-right:10px;display:inline-block"></span>Aura.com</a></li>
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none"><span style="width:12px;height:12px;border-radius:50%;background-color:#58A744;margin-right:10px;display:inline-block"></span>Reports</a></li>
+          </ul>
+        </div>
+        <p class="time-zone" id="header-timezone">
+          <button type="button" class="tooltip-custom" style="margin-right:10px;margin-left:5px">
+            <img src="assets/top-globe-icon.png" alt="">
+          </button>
+          <span class="tz-display">UTC+01:00</span>
+          <button type="button" class="tooltip-custom" style="margin-right:5px;margin-left:5px">
+            <img src="assets/top-info-icon.png" alt="">
+          </button>
+        </p>
+        <a href="#" class="referrals-link">
+          <img src="assets/referral-icon.png" alt="">
+          <span>Referrals</span>
+        </a>
+        <a href="#" class="referrals-link" style="margin-right:0">
+          <img src="assets/trump-icon.png" alt="">
+          <span>Leaderboard</span>
+        </a>
+        <label class="toggle-container">
+          <span class="toggle-label">SFW</span>
+          <div class="toggle-switch">
+            <input type="checkbox" id="sfw-toggle">
+            <div class="slider-toggle"></div>
+          </div>
+        </label>
+        <a href="#" style="margin-right:16px" class="notification-link"><img src="assets/alarm-icon.png" alt=""></a>
+        <div class="profile-dropdown" style="position:relative">
+          <button class="dropdown-toggle" type="button" id="avatar-display-btn">
+            <span class="avatarName" id="avatar-display">Ag</span>
+          </button>
+          <ul class="dropdown-menu" style="display:none;position:absolute;top:calc(100% + 2px);left:-70px;background:#262626;border-radius:5px;overflow:hidden;z-index:100;min-width:120px;padding:0;border:0;list-style:none">
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none">Add Account</a></li>
+            <li><a href="#" style="display:block;font-size:13.6px;line-height:38px;color:#C4D1C7;padding:0 12px;background-color:#262626;text-decoration:none">Logout</a></li>
+          </ul>
+        </div>
+        <a href="#" class="notification-link window-buttons" id="btn-minimize"><img src="assets/min-icon.png" alt=""></a>
+        <a href="#" class="notification-link window-buttons" id="btn-maximize"><img src="assets/max-icon.png" alt=""></a>
+        <a href="#" class="notification-link window-buttons" id="btn-close"><img src="assets/close-icon.png" alt=""></a>
+      </div>
+    </div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="dashboard-sidebar">
+      <!-- === MAIN SIDEBAR === -->
+      <div class="sidebar-main main-sidebar-items" id="main-sidebar">
+        <ul class="sidebar-link-list">
+          <li style="margin-bottom:30px">
+            <button type="button" id="of-top-menu">
+              <img src="assets/of-menu-icon.png" alt=""> Onlyfans
+              <span class="of-badge" id="of-badge-dot"></span>
+            </button>
+          </li>
+          <li>
+            <a href="javascript:;" class="active" id="dashboard-nav-btn"><img src="assets/home-icon.svg" alt=""> Dashboard</a>
+          </li>
+          <li>
+            <button type="button" id="of-manager-nav-btn">
+              <img src="assets/of-icon.png" alt=""> OF Manager
+            </button>
+            <div class="sub-menu">
+              <ul>
+                <li><a href="javascript:;"><img src="assets/new_post.png" alt="" onerror="this.style.display='none'"> New post</a></li>
+                <li><a href="javascript:;"><img src="assets/notifications.png" alt="" onerror="this.style.display='none'"> Notifications</a></li>
+                <li><a href="javascript:;"><img src="assets/messages_basic_icon.png" alt="" onerror="this.style.display='none'"> Messages Basic</a></li>
+                <li><a href="javascript:;"><img src="assets/vault_icon.png" alt="" onerror="this.style.display='none'"> Vault</a></li>
+                <li><a href="javascript:;"><img src="assets/queue_icon.png" alt="" onerror="this.style.display='none'"> Queue</a></li>
+                <li><a href="javascript:;"><img src="assets/collections_icon.png" alt="" onerror="this.style.display='none'"> Collections</a></li>
+                <li><a href="javascript:;"><img src="assets/statements_icon.png" alt="" onerror="this.style.display='none'"> Statements</a></li>
+                <li><a href="javascript:;"><img src="assets/statistics_icon.png" alt="" onerror="this.style.display='none'"> Statistics</a></li>
+                <li><a href="javascript:;"><img src="assets/bank_icon.png" alt="" onerror="this.style.display='none'"> Bank</a></li>
+                <li><a href="javascript:;"><img src="assets/my_profile_icon.png" alt="" onerror="this.style.display='none'"> My Profile</a></li>
+                <li><a href="javascript:;"><img src="assets/of_settings_icon.png" alt="" onerror="this.style.display='none'"> OF Settings</a></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <button type="button" id="analytics-nav-btn">
+              <img src="assets/analytics-icon.svg" alt=""> Analytics
+            </button>
+            <div class="sub-menu">
+              <ul>
+                <li><a href="javascript:;" id="creator-reports-btn"><img src="assets/creator-icon.svg" alt=""> Creator reports</a></li>
+                <li><a href="javascript:;"><img src="assets/person-icon.svg" alt=""> Employee reports</a></li>
+                <li><a href="javascript:;"><img src="assets/fan-icon.svg" alt="" onerror="this.src='assets/analytics-icon.svg'"> Fan reports</a></li>
+                <li><a href="javascript:;"><img src="assets/message-dashboard-icon.svg" alt="" onerror="this.src='assets/messages-icon.png'"> Message dashboard</a></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <a href="#" id="messages-menu">
+              <img src="assets/messages-pro-icon.png" alt=""> Messages Pro
+              <span class="messages-pro-badge" id="messages-badge">0</span>
+              <img src="assets/messages-pro-right-icon.png" class="messages-right-icon" alt="">
+            </a>
+          </li>
+          <li>
+            <button type="button" id="growth-nav-btn">
+              <img src="assets/growth-icon.svg" alt=""> Growth
+            </button>
+            <div class="sub-menu">
+              <ul>
+                <li><a href="javascript:;"><img src="assets/smart_messages_icon.png" alt="" onerror="this.style.display='none'"> Smart Messages</a></li>
+                <li><a href="javascript:;"><img src="assets/smart_lists_icon.png" alt="" onerror="this.style.display='none'"> Smart lists</a></li>
+                <li><a href="javascript:;"><img src="assets/auto_follow_icon.png" alt="" onerror="this.style.display='none'"> Auto-follow</a></li>
+                <li><a href="javascript:;"><img src="assets/vault_icon.png" alt="" onerror="this.style.display='none'"> Vault Pro</a></li>
+                <li><a href="javascript:;"><img src="assets/scripts_icon.png" alt="" onerror="this.style.display='none'"> Scripts</a></li>
+                <li><a href="javascript:;"><img src="assets/profile_promotion_icon.png" alt="" onerror="this.style.display='none'"> Profile promotion</a></li>
+                <li><a href="javascript:;"><img src="assets/free_trial_links_icon.png" alt="" onerror="this.style.display='none'"> Free trial links</a></li>
+                <li><a href="javascript:;"><img src="assets/tracking_links_icon.png" alt="" onerror="this.style.display='none'"> Tracking links</a></li>
+                <li><a href="javascript:;"><img src="assets/sensitive_words_icon.png" alt="" onerror="this.style.display='none'"> Sensitive words</a></li>
+                <li><a href="javascript:;"><img src="assets/ai_copilot_icon.png" alt="" onerror="this.style.display='none'"> AI Copilot</a></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <button type="button">
+              <img src="assets/share-icon.svg" alt=""> Share for Share
+            </button>
+            <div class="sub-menu">
+              <ul>
+                <li><a href="javascript:;"><img src="assets/discover_creators_icon.png" alt="" onerror="this.style.display='none'"> Discover Creators</a></li>
+                <li><a href="javascript:;"><img src="assets/requests_icon.png" alt="" onerror="this.style.display='none'"> Requests</a></li>
+                <li><a href="javascript:;"><img src="assets/s4s_schedule_icon.png" alt="" onerror="this.style.display='none'"> S4S Schedule</a></li>
+                <li><a href="javascript:;"><img src="assets/settings-icon.png" alt="" onerror="this.style.display='none'"> S4S Settings</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+        <hr>
+        <ul class="sidebar-link-list">
+          <li>
+            <button type="button">
+              <img src="assets/creator-icon.svg" alt=""> Creators
+            </button>
+            <div class="sub-menu">
+              <ul>
+                <li><a href="javascript:;"><img src="assets/creator-icon.svg" alt=""> Manage Creators</a></li>
+                <li><a href="javascript:;"><img src="assets/custom_proxy_icon.png" alt="" onerror="this.style.display='none'"> Custom proxy</a></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <button type="button" class="active">
+              <img src="assets/person-icon.svg" alt=""> Employees
+            </button>
+            <div class="sub-menu" style="display:block;margin-top:5px">
+              <ul>
+                <li><a href="javascript:;" id="manage-employees-btn"><img src="assets/person-icon.svg" alt="">Manage employees</a></li>
+                <li><a href="#"><img src="assets/shift_schedule_icon.png" alt="">Shift schedule</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- === ANALYTICS SIDEBAR === -->
+      <div class="sidebar-main growth-sidebar-items" id="analytics-sidebar" style="display:none">
+        <button class="sidebar-back-btn" id="analytics-back-btn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <ul class="sidebar-link-list">
+          <li>
+            <a href="javascript:;" class="active" id="analytics-fans-btn"><img src="assets/fan-icon.svg" alt="" onerror="this.src='assets/analytics-icon.svg'"> Informes de fans</a>
+          </li>
+        </ul>
+        <div class="sidebar-total-earning" id="analytics-sidebar-total">$123,373.26</div>
+        <ul class="sidebar-link-list">
+          <li>
+            <a href="javascript:;" id="msg-dashboard-btn"><img src="assets/message-dashboard-icon.svg" alt="" onerror="this.src='assets/messages-icon.png'"> Message dashboard</a>
+          </li>
+          <li>
+            <a href="#" style="position:relative">
+              <img src="assets/messages-pro-icon.png" alt=""> Messages Pro
+              <span class="messages-pro-badge" style="position:absolute;right:42px;width:15px;height:15px;padding-top:0;text-align:center;border-radius:50%;background-color:#FB609F;color:white;font-size:12px;line-height:1.4;top:13px;font-weight:initial">0</span>
+              <img src="assets/messages-pro-right-icon.png" style="position:absolute;width:26px;height:26px;right:0;display:block" alt="">
+            </a>
+          </li>
+          <li><a href="javascript:;"><img src="assets/growth-icon.svg" alt=""> Crecimiento</a></li>
+          <li><a href="javascript:;"><img src="assets/share-icon.svg" alt=""> Share for Share</a></li>
+        </ul>
+        <hr>
+        <ul class="sidebar-link-list">
+          <li><button type="button"><img src="assets/creator-icon.svg" alt=""> Creadores</button></li>
+          <li><button type="button"><img src="assets/person-icon.svg" alt=""> Empleados</button></li>
+        </ul>
+      </div>
+
+      <!-- === OF MANAGER SIDEBAR === -->
+      <div class="sidebar-main growth-sidebar-items" id="ofmanager-sidebar" style="display:none">
+        <button class="sidebar-back-btn" id="ofmanager-back-btn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <ul class="sidebar-link-list">
+          <li><a href="javascript:;"><img src="assets/vault_icon.png" alt="" onerror="this.src='assets/of-icon.png'"> Bóveda</a></li>
+          <li><a href="javascript:;"><img src="assets/collections_icon.png" alt="" onerror="this.style.display='none'"> Archivos</a></li>
+          <li><a href="javascript:;"><img src="assets/collections_icon.png" alt="" onerror="this.style.display='none'"> Colecciones</a></li>
+          <li><a href="javascript:;"><img src="assets/statements_icon.png" alt="" onerror="this.style.display='none'"> Estados de cuenta</a></li>
+          <li><a href="javascript:;"><img src="assets/statistics_icon.png" alt="" onerror="this.style.display='none'"> Estadísticas</a></li>
+          <li><a href="javascript:;"><img src="assets/requests_icon.png" alt="" onerror="this.style.display='none'"> Retos</a></li>
+          <li><a href="javascript:;"><img src="assets/my_profile_icon.png" alt="" onerror="this.style.display='none'"> Mi perfil</a></li>
+          <li><a href="javascript:;"><img src="assets/of_settings_icon.png" alt="" onerror="this.style.display='none'"> Ajustes de OF</a></li>
+          <li>
+            <button type="button">
+              <img src="assets/analytics-icon.svg" alt=""> Analíticas
+            </button>
+            <div class="sub-menu" style="margin-top:5px">
+              <ul>
+                <li><a href="javascript:;"><img src="assets/analytics-icon.svg" alt="">Informes de creador</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- === GROWTH SIDEBAR === -->
+      <div class="sidebar-main growth-sidebar-items" id="growth-sidebar" style="display:none">
+        <button class="sidebar-back-btn" id="growth-back-btn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <ul class="sidebar-link-list">
+          <li><a href="javascript:;"><img src="assets/smart_messages_icon.png" alt="" onerror="this.style.display='none'"> Smart Messages</a></li>
+          <li><a href="javascript:;" class="active" id="smartlists-nav-btn"><img src="assets/smart_lists_icon.png" alt="" onerror="this.style.display='none'"> Smart lists</a></li>
+          <li><a href="javascript:;"><img src="assets/auto_follow_icon.png" alt="" onerror="this.style.display='none'"> Auto-seguir</a></li>
+          <li><a href="javascript:;"><img src="assets/vault_icon.png" alt="" onerror="this.style.display='none'"> Vault Pro</a></li>
+          <li><a href="javascript:;"><img src="assets/scripts_icon.png" alt="" onerror="this.style.display='none'"> Guiones</a></li>
+          <li><a href="javascript:;"><img src="assets/profile_promotion_icon.png" alt="" onerror="this.style.display='none'"> Promoción de perfil</a></li>
+          <li><a href="javascript:;"><img src="assets/free_trial_links_icon.png" alt="" onerror="this.style.display='none'"> Enlaces de prueba gratuita</a></li>
+          <li><a href="javascript:;"><img src="assets/tracking_links_icon.png" alt="" onerror="this.style.display='none'"> Enlaces de seguimiento</a></li>
+          <li><a href="javascript:;" id="sensitivewords-nav-btn"><img src="assets/sensitive_words_icon.png" alt="" onerror="this.style.display='none'"> Palabras restringidas</a></li>
+          <li><a href="javascript:;"><img src="assets/ai_copilot_icon.png" alt="" onerror="this.style.display='none'"> AI Copilot</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-main">
+        <hr>
+        <ul class="sidebar-link-list">
+          <li>
+            <a href="javascript:;" id="settings-btn"><img src="assets/settings-icon.png" alt=""> Settings</a>
+          </li>
+          <li>
+            <a href="#"><img src="assets/help-center-icon.png" alt=""> Help center</a>
+          </li>
+        </ul>
+        <p class="version" id="version-display" style="color:var(--color-text-secondary)">Version 5.7.4</p>
+      </div>
+    </div>
+
+    <!-- ===== MANAGE EMPLOYEES PAGE ===== -->
+    <div class="emp-page" id="emp-page">
+      <div style="padding:12px 20px;font-size:14px;font-weight:500;color:#ffffff;border-bottom:1px solid #2a2a2a;background:#0f0f0f">Manage employees</div>
+      <div class="emp-page-layout" style="flex:1;overflow:hidden">
+        <!-- Left sidebar with groups -->
+        <div class="emp-sidebar">
+          <div class="emp-sidebar-list" id="emp-sidebar-list">
+          </div>
+        </div>
+        <!-- Right main area -->
+        <div class="emp-main">
+          <div class="emp-main-header">
+            <div class="emp-main-title-row">
+              <span class="emp-main-title" id="emp-selected-name">Manage employees</span>
+              <div class="emp-main-actions">
+                <button class="emp-btn-batch" id="emp-batch-btn">Batch actions <i class="fa-solid fa-chevron-down" style="font-size:10px"></i></button>
+                <button class="emp-btn-add" id="emp-add-btn">+ Add employee</button>
+              </div>
+            </div>
+            <div class="emp-filter-bar">
+              <label>By employee:</label>
+              <input type="text" id="emp-filter-name" placeholder="Employee" style="width:180px">
+              <label>By Creator:</label>
+              <select id="emp-filter-creator">
+                <option value="">Creator</option>
+              </select>
+              <label>By status:</label>
+              <select id="emp-filter-status">
+                <option value="">Status</option>
+                <option value="activated">Activated</option>
+                <option value="pending">Pending</option>
+                <option value="deactivated">Deactivated</option>
+              </select>
+              <div class="emp-filter-spacer"></div>
+              <button class="emp-btn-reset" id="emp-filter-reset">Reset</button>
+              <button class="emp-btn-search" id="emp-filter-search">Search</button>
+            </div>
+          </div>
+          <div class="emp-table-wrap" id="emp-table-wrap">
+            <table class="emp-table" id="emp-table">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="emp-select-all"></th>
+                  <th>Employee</th>
+                  <th>Assigned Creators</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="emp-tbody"></tbody>
+            </table>
+            <div class="emp-empty" id="emp-empty" style="display:none">
+              <i class="fa-solid fa-users"></i>
+              <p>No employees yet. Click "+ Add employee" to add your first team member.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Employee Modal -->
+    <div class="modal-overlay" id="empAddModal">
+      <div class="emp-add-modal">
+        <button class="modal-close" id="emp-add-close" style="top:12px;right:16px;color:#999">&times;</button>
+        <h3>Add Employee</h3>
+        <div class="emp-form-body">
+          <div class="emp-form-row">
+            <input type="text" id="emp-new-firstname" placeholder="First name">
+            <input type="text" id="emp-new-lastname" placeholder="Last name">
+          </div>
+          <div class="emp-form-row">
+            <input type="email" id="emp-new-email" placeholder="Email address">
+          </div>
+          <div class="emp-form-row">
+            <div id="emp-new-role" class="emp-role-checkboxes">
+              <label><input type="checkbox" value="Owner"> Owner</label>
+              <label><input type="checkbox" value="Admin"> Admin</label>
+              <label><input type="checkbox" value="Manager"> Manager</label>
+              <label><input type="checkbox" value="Employee" checked> Employee</label>
+            </div>
+            <button type="button" id="emp-add-custom-role" class="emp-add-role-btn">+ Add role</button>
+            <select id="emp-new-status">
+              <option value="activated">Activated</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
+          <div class="emp-form-row emp-creators-section">
+            <label class="section-label">Assign Creators / Models:</label>
+            <div class="emp-creators-tags" id="emp-new-creators-tags">
+              <!-- tags appear here -->
+            </div>
+            <button type="button" class="emp-creator-assign-btn" id="emp-assign-creator-btn">+ Assign creator</button>
+            <div id="emp-create-model-area" class="emp-model-create-row" style="display:none">
+              <input type="text" id="emp-new-model-name" placeholder="New model name...">
+              <button type="button" id="emp-create-model-btn">Create</button>
+            </div>
+          </div>
+        </div>
+        <div class="emp-form-footer">
+          <button class="emp-cancel-btn" id="emp-add-cancel">Cancel</button>
+          <button class="emp-save-btn" id="emp-add-save">Add Employee</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="dashboard-content" id="dashboard-content">
+      <div class="row">
+        <div class="col-12">
+          <!-- Earnings Overview Card -->
+          <div class="main-card-wrap">
+            <div class="main-card-heading">
+              <h4>Creator earnings overview
+                <button type="button" class="tooltip-custom">
+                  <img src="assets/info-icon.png" alt="">
+                </button>
+                <span class="utc" id="utc-display">UTC+01:00</span>
+                <img src="assets/info-icon.png" alt="" style="margin-left:8px;margin-bottom:2px;width:15px;height:15px">
+              </h4>
+              <div class="header-filter d-flex">
+                <div class="header-shown_by" id="earnings-dropdown">
+                  <button type="button" class="dropdown-btn" id="earnings-mode-btn">Gross earnings</button>
+                  <div class="dropdown-list" id="earnings-dropdown-list">
+                    <a href="javascript:;" class="active" data-value="gross">Gross earnings</a>
+                    <a href="javascript:;" data-value="net">Net earnings</a>
+                  </div>
+                </div>
+                <ul class="time-selector">
+                  <li><button type="button">Yesterday</button></li>
+                  <li><button type="button">Today</button></li>
+                  <li class="active"><button type="button">This week</button></li>
+                  <li><button type="button">This month</button></li>
+                </ul>
+              </div>
+            </div>
+            <div class="main-card-content">
+              <!-- Total Earnings -->
+              <div class="overview-col">
+                <div class="overview-inner">
+                  <img src="assets/of-icon.svg" alt="">
+                  <p>Total earnings</p>
+                  <h5 class="total-earning"><span class="dollar-sign">$</span>553,529.28</h5>
+                </div>
+              </div>
+              <!-- Subscriptions / Tips -->
+              <div class="overview-col">
+                <div class="overview-card">
+                  <div class="card-content">
+                    <h5 class="sub-earning">$27,680.15</h5>
+                    <p>Subscriptions</p>
+                  </div>
+                  <img src="assets/plus-icon.png" alt="">
+                </div>
+                <div class="overview-card">
+                  <div class="card-content">
+                    <h5 class="tips-earning">$44,286.45</h5>
+                    <p>Tips</p>
+                  </div>
+                  <img src="assets/tips-icon.png" alt="">
+                </div>
+              </div>
+              <!-- Posts / Referrals -->
+              <div class="overview-col">
+                <div class="overview-card">
+                  <div class="card-content">
+                    <h5 class="posts-earning">$22,138.75</h5>
+                    <p>Posts</p>
+                  </div>
+                  <img src="assets/posts-icon.png" alt="">
+                </div>
+                <div class="overview-card">
+                  <div class="card-content">
+                    <h5 class="ref-earning">$5,532.45</h5>
+                    <p>Referrals</p>
+                  </div>
+                  <img src="assets/referrals-icon.png" alt="">
+                </div>
+              </div>
+              <!-- Messages / Streams -->
+              <div class="overview-col">
+                <div class="overview-card">
+                  <div class="card-content">
+                    <h5 class="msg-earning">$453,891.48</h5>
+                    <p>Messages</p>
+                  </div>
+                  <img src="assets/messages-icon.png" alt="">
+                </div>
+                <div class="overview-card">
+                  <div class="card-content">
+                    <h5 class="streams-earning">$0.00</h5>
+                    <p>Streams</p>
+                  </div>
+                  <img src="assets/streams-icon.png" alt="">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Section: Shifts + Clocked-in + Charts -->
+        <div class="col-lg-3 charts" style="padding-right:0">
+          <!-- My Shifts -->
+          <div class="main-card-wrap charts" id="dash-myshifts">
+            <div class="main-card-heading">
+              <h4>My shifts
+                <button type="button" class="tooltip-custom">
+                  <img src="assets/info-icon.png" alt="">
+                </button>
+              </h4>
+            </div>
+            <div style="position:relative;top:17%" class="main-card-content nodata" id="dash-myshifts-content">
+              <img src="assets/empty-data.png" alt="">
+              <p>No data</p>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;flex-grow:1">
+            <div style="display:flex;flex-direction:column;flex-grow:1;background-color:transparent">
+              <!-- Clocked-in Employees -->
+              <div class="main-card-wrap charts1" style="margin-top:0">
+                <div class="main-card-heading">
+                  <h4>Current clocked-in employees
+                    <button type="button" class="tooltip-custom employee-count-btn" id="employee-count-btn">
+                      <img src="assets/people-icon.png" alt="">
+                      <span id="employee-count-display">0</span>
+                    </button>
+                  </h4>
+                </div>
+                <div id="employee-badges-container" style="position:relative;top:0%;padding:0;padding-bottom:10px" class="main-card-content nodata">
+                  <img src="assets/empty-data.png" alt="" class="empty-data-img">
+                  <p class="empty-data-text">No employees have clocked in.</p>
+                </div>
+              </div>
+
+              <!-- Employee Sales Chart -->
+              <div id="employee-sales">
+                <div class="chart-title">
+                  Employee sales
+                  <button type="button" class="tooltip-custom">
+                    <img src="assets/info-icon.png" alt="" style="width:15px;height:15px">
+                  </button>
+                </div>
+                <div id="chart-container" style="position:absolute;top:0;left:0;width:100%;height:100%">
+                  <!-- SVG chart rendered here by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Scheduled Hours -->
+            <div class="main-card-wrap charts1">
+              <div class="main-card-heading">
+                <h4>Scheduled hours
+                  <button type="button" class="tooltip-custom">
+                    <img src="assets/info-icon.png" alt="">
+                  </button>
+                </h4>
+              </div>
+              <div style="position:relative;top:0%" class="main-card-content nodata">
+                <img src="assets/empty-data.png" alt="">
+                <p>No data</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ANALYTICS PAGE ===== -->
+    <div class="analytics-page" id="analytics-page">
+    <!-- Creator Reports Header -->
+    <div style="padding:16px 20px 0">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <span style="font-size:18px;font-weight:600;color:#fff">Creator Reports</span>
+        <span style="font-size:13px;color:#888;display:flex;align-items:center;gap:6px">UTC+01:00 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" style="opacity:0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
+      </div>
+      <!-- Tabs + Date + Filters - ALL ONE ROW -->
+      <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #333;padding-bottom:0">
+        <div style="display:flex;align-items:center;gap:24px">
+          <span id="tab-overview" style="font-size:14px;color:#3b82f6;padding-bottom:10px;border-bottom:2px solid #3b82f6;cursor:pointer;font-weight:500">Overview</span>
+          <span id="tab-creator-perf" style="font-size:14px;color:#888;padding-bottom:10px;border-bottom:2px solid transparent;cursor:pointer">Creator performance</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding-bottom:10px">
+          <div class="analytics-date-range">
+            <input type="date" id="analytics-date-start" value="2026-02-01">
+            <span>→</span>
+            <input type="date" id="analytics-date-end" value="2026-02-28">
+          </div>
+          <div class="analytics-top-actions">
+            <button class="btn-shown-by">Shown by week <i class="fa-solid fa-chevron-down" style="font-size:10px;margin-left:4px"></i></button>
+            <button class="btn-time-earning">Net earnings</button>
+            <button class="btn-filter"><i class="fa-solid fa-filter" style="margin-right:5px"></i> Filters</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <!-- Earnings summary -->
+      <div style="padding:16px 20px 8px;font-size:15px;font-weight:500;color:#fff;display:flex;align-items:center;gap:8px">
+        Earnings summary <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" style="opacity:0.7"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </div>
+      <div class="analytics-earnings">
+        <div class="main-card-wrap" style="margin-bottom:0">
+          <div class="main-card-content">
+            <div class="overview-col">
+              <div class="overview-inner">
+                <img src="assets/of-icon.svg" alt="">
+                <p>Total earnings</p>
+                <h5 class="analytics-total" style="color:var(--color-success)"><span class="dollar-sign" style="color:var(--color-success)">$</span>28,093.91</h5>
+              </div>
+            </div>
+            <div class="overview-col">
+              <div class="overview-card">
+                <div class="card-content"><h5 class="analytics-sub">$0.00</h5><p>Subscriptions</p></div>
+                <img src="assets/plus-icon.png" alt="">
+              </div>
+              <div class="overview-card">
+                <div class="card-content"><h5 class="analytics-tips">$2,195.50</h5><p>Tips</p></div>
+                <img src="assets/tips-icon.png" alt="">
+              </div>
+            </div>
+            <div class="overview-col">
+              <div class="overview-card">
+                <div class="card-content"><h5 class="analytics-posts">$0.00</h5><p>Posts</p></div>
+                <img src="assets/posts-icon.png" alt="">
+              </div>
+              <div class="overview-card">
+                <div class="card-content"><h5 class="analytics-ref">$0.00</h5><p>Referrals</p></div>
+                <img src="assets/referrals-icon.png" alt="">
+              </div>
+            </div>
+            <div class="overview-col">
+              <div class="overview-card">
+                <div class="card-content"><h5 class="analytics-msg" style="color:#8b5cf6">$26,892.14</h5><p>Messages</p></div>
+                <img src="assets/messages-icon.png" alt="">
+              </div>
+              <div class="overview-card">
+                <div class="card-content"><h5 class="analytics-streams">$0.00</h5><p>Streams</p></div>
+                <img src="assets/streams-icon.png" alt="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Earnings Trends -->
+      <div class="analytics-section">
+        <div class="analytics-section-title">
+          Earnings trends
+          <button type="button" class="tooltip-custom"><img src="assets/info-icon.png" alt=""></button>
+        </div>
+        <div class="trends-chart">
+          <div class="trends-chart-inner" id="trends-chart-inner">
+            <!-- Bars generated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Earnings by Channel -->
+      <div class="analytics-section">
+        <div class="analytics-section-title">
+          Earnings by channel
+          <button type="button" class="tooltip-custom"><img src="assets/info-icon.png" alt=""></button>
+        </div>
+        <div class="channel-layout">
+          <div class="channel-chart-area">
+            <svg class="channel-chart-svg" id="channel-chart-svg" viewBox="0 0 700 180" preserveAspectRatio="xMidYMid meet">
+              <!-- Generated by JS -->
+            </svg>
+          </div>
+          <div class="channel-legend" id="channel-legend">
+            <!-- Generated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Employee Comparison -->
+      <div class="analytics-section">
+        <div class="analytics-section-title">
+          Employee comparison
+          <button type="button" class="tooltip-custom"><img src="assets/info-icon.png" alt=""></button>
+        </div>
+        <div class="comparison-selectors">
+          <select><option value="">Select</option></select>
+          <select><option value="">Select</option></select>
+          <select><option value="">Select</option></select>
+        </div>
+        <div class="comparison-chart" id="comparison-chart">
+          <div class="comparison-empty">
+            <img src="assets/empty-data.png" alt="">
+            <p>Select up to three employees to compare</p>
+          </div>
+        </div>
+        <div class="chatting-stats-bar">
+          <label>Chatting statistics</label>
+          <div class="toggle-switch" style="background:#444;margin-left:8px">
+            <input type="checkbox">
+            <div class="slider-toggle" style="left:3px;background:white"></div>
+          </div>
+          <span style="font-size:13px;color:var(--color-text-tertiary);margin-left:12px">Show employees with chatter role only</span>
+          <span style="flex:1"></span>
+          <label style="font-size:13px;color:var(--color-text-tertiary)"><input type="checkbox" style="accent-color:#3467ff;margin-right:4px"> Custom matrix</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SMART LISTS PAGE ===== -->
+    <div class="smartlists-page" id="smartlists-page">
+      <div class="smartlists-header">
+        <input type="text" placeholder="Search list name...">
+        <button class="btn-create">+ Create list</button>
+      </div>
+      <table class="smartlists-table">
+        <thead>
+          <tr>
+            <th>Criteria</th>
+            <th>last journal</th>
+            <th>Fans</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="smartlists-tbody">
+          <!-- Generated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ===== SENSITIVE WORDS PAGE ===== -->
+    <div class="sensitivewords-page" id="sensitivewords-page">
+      <div class="sw-header">
+        <button class="btn-import">Import from Excel</button>
+        <button class="btn-export">Export Cards</button>
+        <button class="btn-add-word">+ Add word</button>
+      </div>
+      <div class="sw-alpha-filter" id="sw-alpha-filter">
+        <!-- Generated by JS: A-Z buttons + Special symbol -->
+      </div>
+      <div class="sw-grid" id="sw-grid">
+        <!-- Generated by JS -->
+      </div>
+      <div class="sw-footer">
+        <label>enable / disable</label>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Sticky chat button -->
+<div class="sticky-button">
+  <img src="assets/inf_chats.png" alt="">
+</div>
+
+<!-- ===== SETTINGS MODAL ===== -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-box">
+    <div class="settings-header">
+      <h2>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        Settings
+      </h2>
+      <button class="modal-close" id="settings-close">&times;</button>
+    </div>
+    <div class="settings-tabs">
+      <div class="settings-tab active">General</div>
+    </div>
+    <div class="settings-body">
+      <div class="settings-section">
+        <div class="settings-section-title">Profile</div>
+        <div class="settings-row">
+          <div class="settings-field">
+            <label for="userName">Display Name</label>
+            <input type="text" id="userName" placeholder="Enter name" value="Agency">
+          </div>
+          <div class="settings-field">
+            <label for="avatarName">Avatar Initials</label>
+            <input type="text" id="avatarName" placeholder="Initials" value="Ag">
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-field">
+            <label for="avatarIsImage">Use Avatar Image</label>
+            <select id="avatarIsImage">
+              <option value="1">Yes</option>
+              <option value="0" selected>No</option>
+            </select>
+          </div>
+          <div class="settings-field">
+            <label for="totalEarnings">Total Earnings ($)</label>
+            <input type="text" id="totalEarnings" placeholder="0.00" value="0" inputmode="decimal">
+          </div>
+        </div>
+      </div>
+      <div class="settings-divider"></div>
+      <div class="settings-section">
+        <div class="settings-section-title">Application</div>
+        <div class="settings-row">
+          <div class="settings-field">
+            <label for="appVersion">Version</label>
+            <input type="text" id="appVersion" placeholder="5.7.4" value="5.7.4">
+          </div>
+          <div class="settings-field">
+            <label for="input_messages">Pro Messages</label>
+            <input type="number" id="input_messages" placeholder="0" value="0">
+          </div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-field">
+            <label for="timezone">Timezone</label>
+            <select id="timezone">
+              <option value="UTC-12:00">UTC-12:00</option>
+              <option value="UTC-11:00">UTC-11:00</option>
+              <option value="UTC-10:00">UTC-10:00</option>
+              <option value="UTC-09:00">UTC-09:00</option>
+              <option value="UTC-08:00">UTC-08:00</option>
+              <option value="UTC-07:00">UTC-07:00</option>
+              <option value="UTC-06:00">UTC-06:00</option>
+              <option value="UTC-05:00">UTC-05:00</option>
+              <option value="UTC-04:00">UTC-04:00</option>
+              <option value="UTC-03:00">UTC-03:00</option>
+              <option value="UTC-02:00">UTC-02:00</option>
+              <option value="UTC-01:00">UTC-01:00</option>
+              <option value="UTC+00:00">UTC+00:00</option>
+              <option value="UTC+01:00" selected>UTC+01:00</option>
+              <option value="UTC+02:00">UTC+02:00</option>
+              <option value="UTC+03:00">UTC+03:00</option>
+              <option value="UTC+04:00">UTC+04:00</option>
+              <option value="UTC+05:00">UTC+05:00</option>
+              <option value="UTC+06:00">UTC+06:00</option>
+              <option value="UTC+07:00">UTC+07:00</option>
+              <option value="UTC+08:00">UTC+08:00</option>
+              <option value="UTC+09:00">UTC+09:00</option>
+              <option value="UTC+10:00">UTC+10:00</option>
+              <option value="UTC+11:00">UTC+11:00</option>
+              <option value="UTC+12:00">UTC+12:00</option>
+              <option value="UTC+13:00">UTC+13:00</option>
+              <option value="UTC+14:00">UTC+14:00</option>
+            </select>
+          </div>
+          <div class="settings-field">
+            <label for="headerAlignment">Layout Style</label>
+            <select id="headerAlignment">
+              <option value="left">Windows</option>
+              <option value="right">MacOS</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="settings-divider"></div>
+      <div class="settings-section">
+        <div class="settings-section-title">Preferences</div>
+        <div class="settings-toggle-row">
+          <label>Show Platform Badge</label>
+          <div class="toggle-switch" onclick="this.querySelector('input').click()">
+            <input type="checkbox" id="showOfBadge" checked>
+            <div class="slider-toggle" id="of-badge-slider"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="settings-actions">
+      <a href="javascript:;" class="calculate-btn" id="calculate-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14"/></svg>
+        Apply
+      </a>
+      <a href="javascript:;" class="random-btn" id="randomize-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+        Randomize
+      </a>
+      <a href="javascript:;" class="logout-btn" id="logout-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== AVATAR MODAL ===== -->
+<div class="modal-overlay" id="avatarModal">
+  <div class="avatar-modal-box">
+    <button class="modal-close" id="avatar-close">&times;</button>
+    <h2>Select an Avatar</h2>
+    <div class="avatar-list" id="avatarList">
+      <img src="assets/avatar (1).jpg" alt="avatar1">
+      <img src="assets/avatar (2).jpg" alt="avatar2">
+      <img src="assets/avatar (3).jpg" alt="avatar3">
+      <img src="assets/avatar (4).jpg" alt="avatar4">
+      <img src="assets/avatar (5).jpg" alt="avatar5">
+      <img src="assets/avatar (6).jpg" alt="avatar6">
+      <img src="assets/avatar (7).jpg" alt="avatar7">
+      <img src="assets/avatar (8).jpg" alt="avatar8">
+      <img src="assets/avatar (9).jpg" alt="avatar9">
+      <img src="assets/avatar (11).jpg" alt="avatar11">
+      <img src="assets/avatar (12).jpg" alt="avatar12">
+      <img src="assets/avatar (13).jpg" alt="avatar13">
+    </div>
+    <div class="upload-row">
+      <label for="fileInput">Choose a File</label>
+      <input type="file" id="fileInput" accept="image/*">
+      <button type="button" id="uploadButton">Upload</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let pct = { sub: 0.05, tips: 0.08, posts: 0.04, msg: 0.83, ref: 0 };
+let earningsMode = 'gross';
+const NET_FEE = 0.2;
+let storedGrossTotal = 553529.28;
+let selectedAvatarSrc = null;
+
+// ===== UTILITY =====
+function fmt(n) {
+  return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+function parseVal(el) {
+  return parseFloat(el.innerText.replace(/[\$,\s]/g, '')) || 0;
+}
+function grossToNet(v) { return v * (1 - NET_FEE); }
+function netToGross(v) { return v / (1 - NET_FEE); }
+function applyMode(v) { return earningsMode === 'net' ? grossToNet(v) : v; }
+
+// Element references
+const els = {
+  total: () => document.querySelector('.total-earning'),
+  sub:   () => document.querySelector('.sub-earning'),
+  tips:  () => document.querySelector('.tips-earning'),
+  posts: () => document.querySelector('.posts-earning'),
+  ref:   () => document.querySelector('.ref-earning'),
+  msg:   () => document.querySelector('.msg-earning'),
+  streams: () => document.querySelector('.streams-earning')
+};
+
+// ===== EARNINGS DISTRIBUTION =====
+function distributeFromTotal(grossTotal) {
+  storedGrossTotal = grossTotal;
+  clearChartCache();
+  updateChartWithPeriod();
+  saveState();
+}
+
+function recalcFromSubs() {
+  let s = parseVal(els.sub());
+  let t = parseVal(els.tips());
+  let p = parseVal(els.posts());
+  let r = parseVal(els.ref());
+  let m = parseVal(els.msg());
+  let periodTotal = s + t + p + r + m;
+  if (periodTotal > 0) {
+    pct.sub = s / periodTotal; pct.tips = t / periodTotal;
+    pct.posts = p / periodTotal; pct.ref = 0; pct.msg = m / periodTotal;
+  }
+  // Scale period total back to monthly gross
+  let nonFuture = chartLabels.filter(l => !isFutureDate(l)).length || 1;
+  let dim = daysInCurrentMonth();
+  let monthlyDisplay = (periodTotal / nonFuture) * dim;
+  storedGrossTotal = earningsMode === 'net' ? netToGross(monthlyDisplay) : monthlyDisplay;
+  clearChartCache();
+  updateChartWithPeriod();
+  saveState();
+}
+
+// ===== CLICK-TO-EDIT =====
+function makeEditable(el, type) {
+  el.style.cursor = 'pointer';
+  el.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (this.contentEditable === 'true') return;
+    this.contentEditable = 'true';
+    this.style.outline = '2px solid var(--color-primary)';
+    this.style.outlineOffset = '2px';
+    this.style.borderRadius = '4px';
+    this.focus();
+    let range = document.createRange();
+    range.selectNodeContents(this);
+    let sel = window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+  });
+  el.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); this.blur(); }
+  });
+  el.addEventListener('blur', function() {
+    this.contentEditable = 'false';
+    this.style.outline = ''; this.style.outlineOffset = '';
+    let rawVal = parseVal(this);
+    if (type === 'total') {
+      let gross = earningsMode === 'net' ? netToGross(rawVal) : rawVal;
+      distributeFromTotal(gross);
+    } else {
+      this.innerText = '$' + fmt(rawVal);
+      recalcFromSubs();
+    }
+  });
+}
+
+// ===== CHART (Highcharts-style SVG with drag) =====
+const CHART_W = 1372, CHART_H = 400;
+const PLOT_LEFT = 68, PLOT_TOP = 80, PLOT_RIGHT = 1352, PLOT_BOTTOM = 350;
+const PLOT_W = PLOT_RIGHT - PLOT_LEFT;
+const PLOT_H = PLOT_BOTTOM - PLOT_TOP;
+
+let chartData = [];
+let chartNiceMax = 100;
+let chartLabels = [];
+let isDragging = false;
+let dragPointIndex = -1;
+
+// Format number with commas (locale-safe)
+function fmtAxis(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+// Check if a formatted date label represents a future date
+function isFutureDate(label) {
+  let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let parts = label.split(' ');
+  let mi = months.indexOf(parts[0]);
+  let day = parseInt(parts[1]);
+  let now = new Date();
+  let d = new Date(now.getFullYear(), mi, day);
+  // Normalize to start of day for comparison
+  let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return d > today;
+}
+
+// Generate date range from start to end (inclusive)
+function generateDateRange(start, end) {
+  let dates = [];
+  let cur = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  let endD = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  while (cur <= endD) {
+    dates.push(formatDate(cur));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return dates;
+}
+
+// Calculate days in current month
+function daysInCurrentMonth() {
+  let now = new Date();
+  return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+}
+
+// Update chart + earnings display proportionally to the selected period
+function updateChartWithPeriod() {
+  let activeBtn = document.querySelector('.time-selector li.active button');
+  let period = activeBtn ? activeBtn.innerText : 'This week';
+  let now = new Date();
+  chartLabels = [];
+
+  if (period === 'Yesterday') {
+    let yd = new Date(now); yd.setDate(yd.getDate() - 1);
+    chartLabels = [formatDate(yd)];
+  } else if (period === 'Today') {
+    chartLabels = [formatDate(now)];
+  } else if (period === 'This week') {
+    let d = new Date(now);
+    let day = d.getDay();
+    let diff = day === 0 ? 6 : day - 1;
+    let monday = new Date(d); monday.setDate(d.getDate() - diff);
+    let sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+    chartLabels = generateDateRange(monday, sunday);
+  } else {
+    let first = new Date(now.getFullYear(), now.getMonth(), 1);
+    let last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    chartLabels = generateDateRange(first, last);
+  }
+
+  // Get deterministic daily amounts for the whole month
+  let dailyAmounts = getMonthDailyAmounts();
+
+  // Build chart data from the daily amounts
+  chartData = [];
+  let periodTotal = 0;
+  for (let i = 0; i < chartLabels.length; i++) {
+    if (isFutureDate(chartLabels[i])) {
+      chartData.push(0);
+    } else {
+      let val = dailyAmounts[chartLabels[i]] || 0;
+      chartData.push(val);
+      periodTotal += val;
+    }
+  }
+
+  // Update earnings display
+  els.total().innerHTML = '<span class="dollar-sign">$</span>' + fmt(periodTotal);
+  els.sub().innerText   = '$' + fmt(periodTotal * pct.sub);
+  els.tips().innerText  = '$' + fmt(periodTotal * pct.tips);
+  els.posts().innerText = '$' + fmt(periodTotal * pct.posts);
+  els.ref().innerText   = '$' + fmt(periodTotal * pct.ref);
+  els.msg().innerText   = '$' + fmt(periodTotal * pct.msg);
+
+  renderChart();
+}
+
+
+
+// Seeded hash for deterministic per-day variance
+function dateSeed(dateStr) {
+  let h = 0;
+  for (let i = 0; i < dateStr.length; i++) {
+    h = ((h << 5) - h + dateStr.charCodeAt(i)) | 0;
+  }
+  return h;
+}
+function seededRandom(seed) {
+  let x = Math.sin(seed * 9301 + 49297) * 49297;
+  return x - Math.floor(x);
+}
+
+// Generate daily amounts for the entire month
+// Uses cached drag values when available, seeded random for the rest
+function getMonthDailyAmounts() {
+  let now = new Date();
+  let dim = daysInCurrentMonth();
+  let grossDisplay = applyMode(storedGrossTotal);
+  let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  // Collect all non-future day labels
+  let dayLabels = [];
+  for (let d = 1; d <= dim; d++) {
+    let dt = new Date(now.getFullYear(), now.getMonth(), d);
+    if (dt <= today) dayLabels.push(formatDate(dt));
+  }
+  if (dayLabels.length === 0) return {};
+
+  // Read cached drag values
+  let amounts = {};
+  let cachedSum = 0, uncachedLabels = [];
+  dayLabels.forEach(function(l) {
+    let cached = localStorage.getItem('inf_chart_' + l);
+    if (cached !== null) {
+      amounts[l] = parseFloat(cached);
+      cachedSum += amounts[l];
+    } else {
+      uncachedLabels.push(l);
+    }
+  });
+
+  // Monthly prorated total for non-future days
+  let monthlyProrated = (grossDisplay / dim) * dayLabels.length;
+
+  // If all days are cached, return as-is
+  if (uncachedLabels.length === 0) return amounts;
+
+  // Distribute remaining amount across uncached days with seeded variance
+  let remaining = Math.max(0, monthlyProrated - cachedSum);
+  let weights = {}, totalWeight = 0;
+  uncachedLabels.forEach(function(label) {
+    let seed = dateSeed(label + '_' + now.getFullYear() + '_' + now.getMonth());
+    let w = 0.6 + seededRandom(seed) * 0.8;
+    weights[label] = w;
+    totalWeight += w;
+  });
+
+  uncachedLabels.forEach(function(label) {
+    amounts[label] = totalWeight > 0 ? (weights[label] / totalWeight) * remaining : 0;
+  });
+
+  return amounts;
+}
+
+function computeChartPoints() {
+  let data = chartData;
+  let maxVal = Math.max(...data, 1);
+  chartNiceMax = Math.ceil(maxVal / 5) * 5;
+  if (chartNiceMax < maxVal * 1.1) chartNiceMax = Math.ceil(maxVal * 1.1 / 5) * 5;
+  if (chartNiceMax === 0) chartNiceMax = 100;
+  let points = [];
+  for (let i = 0; i < data.length; i++) {
+    let x = data.length === 1 ? (PLOT_LEFT + PLOT_RIGHT) / 2 :
+            PLOT_LEFT + (i / (data.length - 1)) * PLOT_W;
+    let y = chartNiceMax > 0 ? PLOT_BOTTOM - (data[i] / chartNiceMax) * PLOT_H : PLOT_BOTTOM;
+    y = Math.max(PLOT_TOP, Math.min(PLOT_BOTTOM, y));
+    points.push({ x, y });
+  }
+  return points;
+}
+
+function buildSplinePath(points) {
+  if (points.length === 0) return '';
+  let d = 'M ' + points[0].x.toFixed(2) + ' ' + points[0].y.toFixed(2);
+  for (let i = 1; i < points.length; i++) {
+    let px = points[i-1].x, py = points[i-1].y;
+    let cx = points[i].x, cy = points[i].y;
+    let cp1x = px + (cx - px) * 0.4;
+    let cp2x = cx - (cx - px) * 0.4;
+    d += ' C ' + cp1x.toFixed(2) + ' ' + py.toFixed(2) +
+         ' ' + cp2x.toFixed(2) + ' ' + cy.toFixed(2) +
+         ' ' + cx.toFixed(2) + ' ' + cy.toFixed(2);
+  }
+  return d;
+}
+
+function buildAreaPath(pathD, points) {
+  if (points.length === 0) return '';
+  let d = pathD;
+  d += ' L ' + points[points.length-1].x.toFixed(2) + ' ' + PLOT_BOTTOM;
+  for (let i = points.length - 2; i >= 0; i--) {
+    d += ' L ' + points[i].x.toFixed(2) + ' ' + PLOT_BOTTOM;
+  }
+  return d + ' Z';
+}
+
+function renderChart() {
+  let points = computeChartPoints();
+
+  // Y ticks
+  let yTicks = [];
+  for (let i = 0; i <= 5; i++) {
+    let val = Math.round(chartNiceMax * i / 5);
+    let y = PLOT_BOTTOM - (i / 5) * PLOT_H;
+    yTicks.push({ val, y });
+  }
+
+  let pathD = buildSplinePath(points);
+  let areaD = buildAreaPath(pathD, points);
+
+  let svg = '<svg xmlns="http://www.w3.org/2000/svg" id="chart-svg" width="100%" height="100%" viewBox="0 0 ' + CHART_W + ' ' + CHART_H + '" preserveAspectRatio="xMidYMid meet">';
+  svg += '<rect x="0" y="0" width="' + CHART_W + '" height="' + CHART_H + '" fill="#262626" rx="0" ry="0"/>';
+
+  // Grid lines
+  yTicks.forEach(function(t) {
+    svg += '<line x1="' + PLOT_LEFT + '" y1="' + (t.y + 0.5) + '" x2="' + PLOT_RIGHT + '" y2="' + (t.y + 0.5) + '" stroke="#444444" stroke-width="1" stroke-dasharray="4,3"/>';
+  });
+
+  // Y-axis labels (forced comma format) — monospace for numbers
+  let monoFont = "Roboto Mono, monospace";
+  let textFont = "Inter, Calibri, sans-serif";
+  yTicks.forEach(function(t) {
+    svg += '<text x="' + (PLOT_LEFT - 5) + '" y="' + (t.y + 3) + '" text-anchor="end" fill="#999999" font-size="16" font-family="' + textFont + '">' + fmtAxis(t.val) + '</text>';
+  });
+
+  // X-axis labels — every 2 days for month, all for week/today/yesterday
+  let xStep = chartLabels.length > 14 ? 2 : 1;
+  for (let i = 0; i < chartLabels.length; i += xStep) {
+    let x = chartData.length === 1 ? (PLOT_LEFT + PLOT_RIGHT) / 2 :
+            PLOT_LEFT + (i / (chartData.length - 1)) * PLOT_W;
+    svg += '<text x="' + x.toFixed(2) + '" y="' + (PLOT_BOTTOM + 28) + '" text-anchor="middle" fill="#999999" font-size="16" font-family="' + textFont + '">' + chartLabels[i] + '</text>';
+  }
+
+  // Area + line
+  if (points.length > 0) {
+    svg += '<path id="chart-area" d="' + areaD + '" fill="#30343566"/>';
+    svg += '<path id="chart-line" d="' + pathD + '" fill="none" stroke="#3467FF" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>';
+  }
+
+  // Hit areas (large invisible) + visible dots
+  points.forEach(function(p, i) {
+    svg += '<circle cx="' + p.x.toFixed(2) + '" cy="' + p.y.toFixed(2) + '" r="20" fill="transparent" stroke="none" data-idx="' + i + '" class="chart-hit" style="cursor:ns-resize"/>';
+    svg += '<circle cx="' + p.x.toFixed(2) + '" cy="' + p.y.toFixed(2) + '" r="5.5" fill="#FFFFFF" stroke="#3467FF" stroke-width="2" data-idx="' + i + '" class="chart-dot" style="pointer-events:none"/>';
+  });
+
+  svg += '</svg>';
+  document.getElementById('chart-container').innerHTML = svg;
+}
+
+// Fast update during drag - only move SVG elements, no full rebuild
+function updateChartFast() {
+  let svgEl = document.getElementById('chart-svg');
+  if (!svgEl) return;
+
+  let points = computeChartPoints();
+  let pathD = buildSplinePath(points);
+  let areaD = buildAreaPath(pathD, points);
+
+  // Update paths
+  let areaEl = document.getElementById('chart-area');
+  let lineEl = document.getElementById('chart-line');
+  if (areaEl) areaEl.setAttribute('d', areaD);
+  if (lineEl) lineEl.setAttribute('d', pathD);
+
+  // Update dot + hit positions
+  let hits = svgEl.querySelectorAll('.chart-hit');
+  let dots = svgEl.querySelectorAll('.chart-dot');
+  points.forEach(function(p, i) {
+    if (hits[i]) { hits[i].setAttribute('cx', p.x.toFixed(2)); hits[i].setAttribute('cy', p.y.toFixed(2)); }
+    if (dots[i]) { dots[i].setAttribute('cx', p.x.toFixed(2)); dots[i].setAttribute('cy', p.y.toFixed(2)); }
+  });
+
+  // Update Y-axis labels
+  let yTexts = svgEl.querySelectorAll('text[text-anchor="end"]');
+  for (let i = 0; i <= 5; i++) {
+    let val = Math.round(chartNiceMax * i / 5);
+    let y = PLOT_BOTTOM - (i / 5) * PLOT_H;
+    if (yTexts[i]) {
+      yTexts[i].textContent = fmtAxis(val);
+      yTexts[i].setAttribute('y', (y + 3).toFixed(2));
+    }
+  }
+
+  // Update Y grid lines
+  let gridLines = svgEl.querySelectorAll('line[stroke="#444444"]');
+  for (let i = 0; i <= 5; i++) {
+    let y = PLOT_BOTTOM - (i / 5) * PLOT_H;
+    if (gridLines[i]) {
+      gridLines[i].setAttribute('y1', (y + 0.5).toFixed(2));
+      gridLines[i].setAttribute('y2', (y + 0.5).toFixed(2));
+    }
+  }
+}
+
+// Convert screen coords to SVG coords
+function screenToSVG(svgEl, clientX, clientY) {
+  let pt = svgEl.createSVGPoint();
+  pt.x = clientX; pt.y = clientY;
+  return pt.matrixTransform(svgEl.getScreenCTM().inverse());
+}
+
+// Global drag handlers (attached ONCE)
+function initChartDrag() {
+  let container = document.getElementById('chart-container');
+
+  // Delegate mousedown to hit circles
+  container.addEventListener('mousedown', function(e) {
+    let hit = e.target.closest('.chart-hit');
+    if (!hit) return;
+    e.preventDefault();
+    isDragging = true;
+    dragPointIndex = parseInt(hit.getAttribute('data-idx'));
+    document.body.style.cursor = 'ns-resize';
+    document.body.style.userSelect = 'none';
+  });
+
+  // Mousemove on document for fluid tracking
+  document.addEventListener('mousemove', function(e) {
+    if (!isDragging || dragPointIndex < 0) return;
+    let svgEl = document.getElementById('chart-svg');
+    if (!svgEl) return;
+    e.preventDefault();
+
+    let svgPt = screenToSVG(svgEl, e.clientX, e.clientY);
+    let newY = Math.max(PLOT_TOP, Math.min(PLOT_BOTTOM, svgPt.y));
+    let newVal = ((PLOT_BOTTOM - newY) / PLOT_H) * chartNiceMax;
+    chartData[dragPointIndex] = Math.max(0, newVal);
+
+    // Fast SVG update (no DOM rebuild)
+    updateChartFast();
+
+    // Update earnings display (period total from chart sum)
+    let periodTotal = chartData.reduce((a, b) => a + b, 0);
+    // Scale back to monthly gross for storage
+    let nonFuture = chartLabels.filter(l => !isFutureDate(l)).length;
+    let dim = daysInCurrentMonth();
+    let monthlyDisplay = nonFuture > 0 ? (periodTotal / nonFuture) * dim : periodTotal;
+    storedGrossTotal = earningsMode === 'net' ? netToGross(monthlyDisplay) : monthlyDisplay;
+    els.total().innerHTML = '<span class="dollar-sign">$</span>' + fmt(periodTotal);
+    els.sub().innerText   = '$' + fmt(periodTotal * pct.sub);
+    els.tips().innerText  = '$' + fmt(periodTotal * pct.tips);
+    els.posts().innerText = '$' + fmt(periodTotal * pct.posts);
+    els.ref().innerText   = '$' + fmt(periodTotal * pct.ref);
+    els.msg().innerText   = '$' + fmt(periodTotal * pct.msg);
+  });
+
+  // Mouseup on document
+  document.addEventListener('mouseup', function() {
+    if (isDragging) {
+      isDragging = false;
+      dragPointIndex = -1;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      // Save per-date chart values to localStorage
+      for (let i = 0; i < chartLabels.length; i++) {
+        localStorage.setItem('inf_chart_' + chartLabels[i], chartData[i]);
+      }
+      // Do a full re-render to clean up Y-axis after drag
+      renderChart();
+      saveState();
+    }
+  });
+}
+
+// Clear cached chart date values (called when total earnings change via settings/edit)
+function clearChartCache() {
+  let keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    let k = localStorage.key(i);
+    if (k && k.startsWith('inf_chart_')) keys.push(k);
+  }
+  keys.forEach(k => localStorage.removeItem(k));
+}
+
+function formatDate(d) {
+  let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[d.getMonth()] + ' ' + d.getDate();
+}
+
+// ===== SETTINGS MODAL =====
+function openSettings() {
+  // Load current values into form
+  document.getElementById('userName').value = localStorage.getItem('inf_username') || 'Agency';
+  document.getElementById('avatarName').value = localStorage.getItem('inf_avatar') || 'Ag';
+  document.getElementById('totalEarnings').value = localStorage.getItem('inf_totalEarnings') || '0';
+  document.getElementById('appVersion').value = localStorage.getItem('inf_version') || '5.7.4';
+  document.getElementById('input_messages').value = localStorage.getItem('inf_messages') || '0';
+  document.getElementById('timezone').value = localStorage.getItem('inf_timezone') || 'UTC+01:00';
+  document.getElementById('headerAlignment').value = localStorage.getItem('inf_headerAlignment') || 'left';
+  document.getElementById('showOfBadge').checked = localStorage.getItem('inf_showOfBadge') !== 'false';
+  document.getElementById('avatarIsImage').value = localStorage.getItem('inf_avatarIsImage') || '0';
+  updateBadgeSlider();
+  document.getElementById('settingsModal').classList.add('active');
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('active');
+}
+
+function applySettings() {
+  let userName = document.getElementById('userName').value;
+  let avatarName = document.getElementById('avatarName').value;
+  let avatarIsImage = document.getElementById('avatarIsImage').value;
+  let totalEarnings = document.getElementById('totalEarnings').value;
+  let appVersion = document.getElementById('appVersion').value;
+  let messages = document.getElementById('input_messages').value;
+  let timezone = document.getElementById('timezone').value;
+  let headerAlignment = document.getElementById('headerAlignment').value;
+  let showOfBadge = document.getElementById('showOfBadge').checked;
+
+  // Save to localStorage
+  localStorage.setItem('inf_username', userName);
+  localStorage.setItem('inf_avatar', avatarName);
+  localStorage.setItem('inf_avatarIsImage', avatarIsImage);
+  localStorage.setItem('inf_totalEarnings', totalEarnings);
+  localStorage.setItem('inf_version', appVersion);
+  localStorage.setItem('inf_messages', messages);
+  localStorage.setItem('inf_timezone', timezone);
+  localStorage.setItem('inf_headerAlignment', headerAlignment);
+  localStorage.setItem('inf_showOfBadge', showOfBadge);
+
+  // Apply to UI
+  updateUIFromSettings();
+
+  // Apply total earnings if specified
+  let earningsVal = parseFloat(totalEarnings.replace(/,/g, ''));
+  if (earningsVal > 0) {
+    distributeFromTotal(earningsVal);
+  }
+
+  closeSettings();
+}
+
+function updateUIFromSettings() {
+  let userName = localStorage.getItem('inf_username') || 'Agency';
+  let avatarName = localStorage.getItem('inf_avatar') || 'Ag';
+  let avatarIsImage = localStorage.getItem('inf_avatarIsImage') || '0';
+  let appVersion = localStorage.getItem('inf_version') || '5.7.4';
+  let messages = localStorage.getItem('inf_messages') || '0';
+  let timezone = localStorage.getItem('inf_timezone') || 'UTC+01:00';
+  let headerAlignment = localStorage.getItem('inf_headerAlignment') || 'left';
+  let showOfBadge = localStorage.getItem('inf_showOfBadge') !== 'false';
+
+  // Avatar display
+  let avatarDisplay = document.getElementById('avatar-display');
+  let avatarBtn = document.getElementById('avatar-display-btn');
+  let savedAvatarImg = localStorage.getItem('inf_avatarImg');
+
+  if (avatarIsImage === '1' && savedAvatarImg) {
+    avatarBtn.innerHTML = '<img class="avatarImg" src="' + savedAvatarImg + '" alt="">';
+  } else {
+    avatarBtn.innerHTML = '<span class="avatarName" id="avatar-display">' + avatarName + '</span>';
+  }
+
+  // Version
+  document.getElementById('version-display').innerText = 'Version ' + appVersion;
+
+  // Messages badge
+  document.getElementById('messages-badge').innerText = messages;
+
+  // Timezone
+  document.querySelectorAll('.tz-display').forEach(el => el.innerText = timezone);
+  document.getElementById('utc-display').innerText = timezone;
+
+  // Header alignment
+  let header = document.querySelector('.dashboard-header');
+  if (headerAlignment === 'right') {
+    header.style.flexDirection = 'row-reverse';
+  } else {
+    header.style.flexDirection = 'row';
+  }
+
+  // OF Badge
+  let badge = document.getElementById('of-badge-dot');
+  if (badge) badge.style.display = showOfBadge ? 'inline-block' : 'none';
+}
+
+function updateBadgeSlider() {
+  let cb = document.getElementById('showOfBadge');
+  let slider = document.getElementById('of-badge-slider');
+  if (cb.checked) {
+    slider.style.left = '13px'; slider.style.backgroundColor = 'var(--color-primary)';
+  } else {
+    slider.style.left = '3px'; slider.style.backgroundColor = 'white';
+  }
+}
+
+function randomizeEarnings() {
+  let total = Math.floor(Math.random() * 900000) + 100000 + Math.random();
+  total = Math.round(total * 100) / 100;
+  document.getElementById('totalEarnings').value = total.toString();
+  // Also randomize percentages slightly
+  pct.sub = 0.03 + Math.random() * 0.06;
+  pct.tips = 0.05 + Math.random() * 0.08;
+  pct.posts = 0.02 + Math.random() * 0.06;
+  pct.ref = 0;
+  pct.msg = 1 - pct.sub - pct.tips - pct.posts - pct.ref;
+  distributeFromTotal(total);
+  closeSettings();
+}
+
+// ===== AVATAR MODAL =====
+function openAvatarModal() {
+  document.getElementById('avatarModal').classList.add('active');
+}
+function closeAvatarModal() {
+  document.getElementById('avatarModal').classList.remove('active');
+}
+
+// ===== MANAGE EMPLOYEES PAGE =====
+const EMP_AVATAR_COLORS = ['#3467ff','#2ad4ac','#F88056','#ff7c71','#ffa15f','#9b59b6','#1abc9c','#e74c3c'];
+let empSelectedIdx = -1;
+
+function getEmployees() {
+  try { return JSON.parse(localStorage.getItem('inf_employees') || '[]'); } catch(e) { return []; }
+}
+function saveEmployees(list) {
+  localStorage.setItem('inf_employees', JSON.stringify(list));
+}
+function empInitials(name) {
+  let parts = name.trim().split(/\s+/);
+  return parts.map(w => w[0]).join('').toUpperCase().slice(0,2);
+}
+function empAvatarColor(name) {
+  let h = 0; for(let i=0;i<name.length;i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return EMP_AVATAR_COLORS[Math.abs(h) % EMP_AVATAR_COLORS.length];
+}
+
+// Show employee page, hide other pages
+function showEmpPage() {
+  document.getElementById('dashboard-content').style.display = 'none';
+  document.getElementById('analytics-page').classList.remove('active');
+  document.getElementById('smartlists-page').classList.remove('active');
+  document.getElementById('sensitivewords-page').classList.remove('active');
+  document.getElementById('emp-page').classList.add('active');
+  showSidebar('main');
+  // Update nav active state
+  document.getElementById('dashboard-nav-btn').classList.remove('active');
+  document.getElementById('manage-employees-btn').classList.add('active');
+  // Show loading spinners
+  let sidebarList = document.getElementById('emp-sidebar-list');
+  sidebarList.innerHTML = '<div class="emp-sidebar-loading"><div class="emp-spinner"><span></span><span></span><span></span><span></span></div></div>';
+  let tableWrap = document.getElementById('emp-table-wrap');
+  let empEmpty = document.getElementById('emp-empty');
+  tableWrap.querySelector('table').style.display = 'none';
+  empEmpty.style.display = 'none';
+  let tableLoader = document.createElement('div');
+  tableLoader.className = 'emp-table-loading';
+  tableLoader.innerHTML = '<div class="emp-spinner"><span></span><span></span><span></span><span></span></div>';
+  tableWrap.style.display = '';
+  tableWrap.appendChild(tableLoader);
+  setTimeout(function() {
+    tableLoader.remove();
+    tableWrap.querySelector('table').style.display = '';
+    renderEmpSidebar();
+    updateEmpSelectedName();
+    renderEmpTable();
+  }, 800);
+}
+// Show dashboard, hide all other pages
+function showDashboard() {
+  document.getElementById('emp-page').classList.remove('active');
+  document.getElementById('analytics-page').classList.remove('active');
+  document.getElementById('smartlists-page').classList.remove('active');
+  document.getElementById('sensitivewords-page').classList.remove('active');
+  document.getElementById('dashboard-content').style.display = '';
+  showSidebar('main');
+  // Update nav active state
+  document.getElementById('manage-employees-btn').classList.remove('active');
+  document.getElementById('dashboard-nav-btn').classList.add('active');
+  // Show loading spinners on My shifts and chart
+  var spinnerHTML = '<div class="dash-loading"><div class="emp-spinner"><span></span><span></span><span></span><span></span></div></div>';
+  var shiftsContent = document.getElementById('dash-myshifts-content');
+  var chartContainer = document.getElementById('chart-container');
+  var chartOrig = chartContainer.innerHTML;
+  shiftsContent.innerHTML = spinnerHTML;
+  shiftsContent.style.top = '0';
+  shiftsContent.style.minHeight = '200px';
+  chartContainer.innerHTML = spinnerHTML;
+  setTimeout(function() {
+    shiftsContent.innerHTML = '<img src="assets/empty-data.png" alt=""><p>No data</p>';
+    shiftsContent.style.top = '17%';
+    shiftsContent.style.minHeight = '';
+    chartContainer.innerHTML = chartOrig;
+  }, 800);
+}
+
+// === Groups sidebar ===
+function getEmpGroups() {
+  try { return JSON.parse(localStorage.getItem('aura_emp_groups') || '[]'); } catch(e) { return []; }
+}
+function saveEmpGroups(g) { localStorage.setItem('aura_emp_groups', JSON.stringify(g)); }
+let empSelectedGroup = 0;
+
+function renderEmpSidebar() {
+  let groups = getEmpGroups();
+  let container = document.getElementById('emp-sidebar-list');
+  if (groups.length === 0) {
+    groups = ['My Team'];
+    saveEmpGroups(groups);
+  }
+  let html = '';
+  groups.forEach((name, i) => {
+    let sel = i === empSelectedGroup ? ' selected' : '';
+    html += '<div class="emp-sidebar-item' + sel + '" data-idx="' + i + '">' +
+      '<span class="emp-sb-name">' + name + '</span>' +
+      '<span class="emp-sb-dots" title="Options">&#8942;</span>' +
+    '</div>';
+  });
+  container.innerHTML = html;
+  container.querySelectorAll('.emp-sidebar-item').forEach(item => {
+    item.querySelector('.emp-sb-dots').addEventListener('click', function(e) {
+      e.stopPropagation();
+      empGroupMenu(parseInt(item.dataset.idx));
+    });
+    item.querySelector('.emp-sb-name').addEventListener('click', function(e) {
+      e.stopPropagation();
+      let idx = parseInt(item.dataset.idx);
+      empSelectedGroup = idx;
+      renderEmpSidebar();
+      updateEmpSelectedName();
+      // Inline edit
+      let nameSpan = container.querySelectorAll('.emp-sidebar-item')[idx].querySelector('.emp-sb-name');
+      let groups = getEmpGroups();
+      let input = document.createElement('input');
+      input.type = 'text';
+      input.value = groups[idx];
+      input.style.cssText = 'background:transparent;border:none;color:#d9d9d9;font-size:13px;font-weight:700;font-family:var(--font-text);outline:none;width:100%;padding:0;';
+      nameSpan.textContent = '';
+      nameSpan.appendChild(input);
+      input.focus();
+      input.select();
+      function saveEdit() {
+        let val = input.value.trim();
+        if (val && val !== groups[idx]) {
+          groups[idx] = val;
+          saveEmpGroups(groups);
+          updateEmpSelectedName();
+        }
+        renderEmpSidebar();
+      }
+      input.addEventListener('blur', saveEdit);
+      input.addEventListener('keydown', function(ev) {
+        if (ev.key === 'Enter') { input.blur(); }
+        if (ev.key === 'Escape') { input.value = groups[idx]; input.blur(); }
+      });
+    });
+  });
+}
+
+function empGroupMenu(idx) {
+  let groups = getEmpGroups();
+  let action = prompt('Group: "' + groups[idx] + '"\n\nType new name to rename, or type DELETE to remove:');
+  if (action === null) return;
+  if (action.trim().toUpperCase() === 'DELETE') {
+    groups.splice(idx, 1);
+    if (empSelectedGroup >= groups.length) empSelectedGroup = Math.max(0, groups.length - 1);
+  } else if (action.trim()) {
+    groups[idx] = action.trim();
+  }
+  saveEmpGroups(groups);
+  renderEmpSidebar();
+  updateEmpSelectedName();
+}
+
+function empAddGroup() {
+  let name = prompt('Enter group name:');
+  if (!name || !name.trim()) return;
+  let groups = getEmpGroups();
+  groups.push(name.trim());
+  saveEmpGroups(groups);
+  empSelectedGroup = groups.length - 1;
+  renderEmpSidebar();
+  updateEmpSelectedName();
+}
+
+function updateEmpSelectedName() {
+  let groups = getEmpGroups();
+  let titleEl = document.getElementById('emp-selected-name');
+  if (empSelectedGroup >= 0 && empSelectedGroup < groups.length) {
+    titleEl.textContent = groups[empSelectedGroup];
+  } else {
+    titleEl.textContent = 'Manage employees';
+  }
+}
+
+function renderEmpTable(filters) {
+  let list = getEmployees();
+  let tbody = document.getElementById('emp-tbody');
+  let empty = document.getElementById('emp-empty');
+  let tableWrap = document.getElementById('emp-table');
+
+  // Populate creator filter dropdown with models
+  let creatorSelect = document.getElementById('emp-filter-creator');
+  let currentCreatorVal = creatorSelect.value;
+  let models = getModels();
+  creatorSelect.innerHTML = '<option value="">Creator</option>';
+  models.forEach(function(m) {
+    creatorSelect.innerHTML += '<option value="' + m + '">' + m + '</option>';
+  });
+  creatorSelect.value = currentCreatorVal;
+
+  // Apply filters
+  let filtered = list.map((e,i) => ({...e, _idx: i}));
+  if (filters) {
+    if (filters.name) filtered = filtered.filter(e => e.name.toLowerCase().includes(filters.name.toLowerCase()));
+    if (filters.status) filtered = filtered.filter(e => e.status === filters.status);
+    if (filters.creator) filtered = filtered.filter(e => (e.creators || []).some(c => c.toLowerCase().includes(filters.creator.toLowerCase())));
+  }
+
+  if (filtered.length === 0 && list.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'flex';
+    tableWrap.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  tableWrap.style.display = '';
+
+  let html = '';
+  filtered.forEach(emp => {
+    let roles = emp.role || 'Employee';
+    if (typeof roles === 'string') roles = roles.charAt(0).toUpperCase() + roles.slice(1);
+    let creators = (emp.creators && emp.creators.length > 0)
+      ? '<span class="emp-creators-names" onclick="empSetCreators(' + emp._idx + ')">' + emp.creators.join(', ') + '</span>'
+      : '<span class="emp-creators-cell" onclick="empSetCreators(' + emp._idx + ')">+ Click to set</span>';
+    let statusClass = emp.status || 'activated';
+    let statusLabel = statusClass.charAt(0).toUpperCase() + statusClass.slice(1);
+    html += '<tr data-idx="' + emp._idx + '">' +
+      '<td><input type="checkbox" class="emp-row-check" data-idx="' + emp._idx + '"></td>' +
+      '<td>' + emp.name + '</td>' +
+      '<td>' + creators + '</td>' +
+      '<td class="emp-role-cell">' + roles + '</td>' +
+      '<td><span class="emp-status-text ' + statusClass + '">' + statusLabel + '</span></td>' +
+      '<td>' +
+        '<button class="emp-action-link" onclick="empEditRow(' + emp._idx + ')">Edit</button>' +
+        '<button class="emp-action-link" onclick="empMoreRow(' + emp._idx + ')">More</button>' +
+      '</td>' +
+    '</tr>';
+  });
+  tbody.innerHTML = html;
+}
+
+// ===== CREATOR / MODEL MANAGEMENT =====
+function getModels() {
+  try { return JSON.parse(localStorage.getItem('aura_models')) || []; } catch(e) { return []; }
+}
+function saveModels(list) {
+  localStorage.setItem('aura_models', JSON.stringify(list));
+}
+
+// Temp state for creators being assigned in the modal
+var empModalCreators = [];
+
+function empRenderModalCreators() {
+  let container = document.getElementById('emp-new-creators-tags');
+  if (!container) return;
+  container.innerHTML = '';
+  empModalCreators.forEach(function(name, i) {
+    let tag = document.createElement('span');
+    tag.className = 'emp-creator-tag';
+    tag.innerHTML = name + '<span class="remove-tag" data-ci="' + i + '">&times;</span>';
+    container.appendChild(tag);
+  });
+  // Remove handler
+  container.querySelectorAll('.remove-tag').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      let ci = parseInt(this.dataset.ci);
+      empModalCreators.splice(ci, 1);
+      empRenderModalCreators();
+    });
+  });
+}
+
+function empShowCreatorPicker() {
+  // Close existing picker
+  let old = document.querySelector('.emp-creator-picker');
+  if (old) { old.remove(); return; }
+
+  let models = getModels();
+  let btn = document.getElementById('emp-assign-creator-btn');
+  let rect = btn.getBoundingClientRect();
+
+  let picker = document.createElement('div');
+  picker.className = 'emp-creator-picker';
+  picker.style.position = 'fixed';
+  picker.style.left = rect.left + 'px';
+  picker.style.top = (rect.bottom + 4) + 'px';
+
+  if (models.length === 0) {
+    picker.innerHTML = '<div class="picker-empty">No models created yet.<br>Create one below.</div>';
+  } else {
+    models.forEach(function(name) {
+      let checked = empModalCreators.includes(name);
+      let item = document.createElement('div');
+      item.className = 'picker-item';
+      item.innerHTML = '<input type="checkbox"' + (checked ? ' checked' : '') + '> ' + name;
+      item.addEventListener('click', function(e) {
+        let cb = item.querySelector('input');
+        if (e.target !== cb) cb.checked = !cb.checked;
+        if (cb.checked) {
+          if (!empModalCreators.includes(name)) empModalCreators.push(name);
+        } else {
+          empModalCreators = empModalCreators.filter(function(n) { return n !== name; });
+        }
+        empRenderModalCreators();
+      });
+      picker.appendChild(item);
+    });
+  }
+
+  document.body.appendChild(picker);
+
+  // Close on outside click
+  setTimeout(function() {
+    document.addEventListener('click', function closePicker(e) {
+      if (!picker.contains(e.target) && e.target !== btn) {
+        picker.remove();
+        document.removeEventListener('click', closePicker);
+      }
+    });
+  }, 10);
+}
+
+function empSetCreators(idx) {
+  // Open the edit modal for that employee so they can assign creators there
+  empEditRow(idx);
+}
+
+function empEditRow(idx) {
+  let list = getEmployees();
+  if (idx < 0 || idx >= list.length) return;
+  let emp = list[idx];
+  // Populate add modal with edit data
+  document.getElementById('emp-new-firstname').value = emp.name.split(' ')[0] || '';
+  document.getElementById('emp-new-lastname').value = emp.name.split(' ').slice(1).join(' ') || '';
+  document.getElementById('emp-new-email').value = emp.email || '';
+  let roles = (emp.role || 'Employee').split(',');
+  document.querySelectorAll('#emp-new-role input[type="checkbox"]').forEach(cb => { cb.checked = roles.includes(cb.value); });
+  document.getElementById('emp-new-status').value = emp.status || 'activated';
+  // Load creators
+  empModalCreators = (emp.creators && emp.creators.length > 0) ? emp.creators.slice() : [];
+  empRenderModalCreators();
+  // Hide create model area in edit mode (only from Add Employee)
+  document.getElementById('emp-create-model-area').style.display = 'none';
+  // Tag modal as editing
+  document.getElementById('empAddModal').dataset.editIdx = idx;
+  document.getElementById('empAddModal').querySelector('h3').textContent = 'Edit Employee';
+  document.getElementById('emp-add-save').textContent = 'Save Changes';
+  document.getElementById('empAddModal').classList.add('active');
+}
+
+function empMoreRow(idx) {
+  let list = getEmployees();
+  if (idx < 0 || idx >= list.length) return;
+  if (confirm('Delete employee "' + list[idx].name + '"?')) {
+    list.splice(idx, 1);
+    if (empSelectedIdx === idx) empSelectedIdx = -1;
+    else if (empSelectedIdx > idx) empSelectedIdx--;
+    saveEmployees(list);
+    renderEmpTable();
+    renderEmpSidebar();
+    updateEmpSelectedName();
+  }
+}
+
+function openEmpAddModal() {
+  // Reset form
+  document.getElementById('emp-new-firstname').value = '';
+  document.getElementById('emp-new-lastname').value = '';
+  document.getElementById('emp-new-email').value = '';
+  document.querySelectorAll('#emp-new-role input[type="checkbox"]').forEach(cb => { cb.checked = cb.value === 'Employee'; });
+  document.getElementById('emp-new-status').value = 'activated';
+  // Reset creators
+  empModalCreators = [];
+  empRenderModalCreators();
+  // Show create model area (only in Add mode)
+  document.getElementById('emp-create-model-area').style.display = 'flex';
+  document.getElementById('emp-new-model-name').value = '';
+  delete document.getElementById('empAddModal').dataset.editIdx;
+  document.getElementById('empAddModal').querySelector('h3').textContent = 'Add Employee';
+  document.getElementById('emp-add-save').textContent = 'Add Employee';
+  document.getElementById('empAddModal').classList.add('active');
+}
+function closeEmpAddModal() {
+  document.getElementById('empAddModal').classList.remove('active');
+}
+
+function empSaveEmployee() {
+  let first = document.getElementById('emp-new-firstname').value.trim();
+  let last = document.getElementById('emp-new-lastname').value.trim();
+  let email = document.getElementById('emp-new-email').value.trim();
+  let role = Array.from(document.querySelectorAll('#emp-new-role input[type="checkbox"]:checked')).map(cb => cb.value).join(',') || 'Employee';
+  let status = document.getElementById('emp-new-status').value;
+  if (!first) return;
+  let name = first + (last ? ' ' + last : '');
+  let list = getEmployees();
+  let editIdx = document.getElementById('empAddModal').dataset.editIdx;
+  if (editIdx !== undefined) {
+    let idx = parseInt(editIdx);
+    list[idx].name = name;
+    list[idx].email = email;
+    list[idx].role = role;
+    list[idx].status = status;
+    list[idx].creators = empModalCreators.slice();
+  } else {
+    list.push({ name, email, role, status, creators: empModalCreators.slice() });
+  }
+  saveEmployees(list);
+  closeEmpAddModal();
+  renderEmpTable();
+  renderEmpSidebar();
+  updateEmpSelectedName();
+}
+
+function empApplyFilters() {
+  let fname = document.getElementById('emp-filter-name').value.trim();
+  let fstatus = document.getElementById('emp-filter-status').value;
+  let fcreator = document.getElementById('emp-filter-creator').value;
+  renderEmpTable({ name: fname, status: fstatus, creator: fcreator });
+}
+function empResetFilters() {
+  document.getElementById('emp-filter-name').value = '';
+  document.getElementById('emp-filter-status').value = '';
+  document.getElementById('emp-filter-creator').value = '';
+  renderEmpTable();
+}
+
+// ===== EMPLOYEE BADGES =====
+function updateEmployeeCount() {
+  let count = prompt('Enter number of clocked-in employees:', '0');
+  if (count === null) return;
+  count = parseInt(count) || 0;
+  document.getElementById('employee-count-display').innerText = count;
+  let container = document.getElementById('employee-badges-container');
+
+  if (count === 0) {
+    container.className = 'main-card-content nodata';
+    container.innerHTML = '<img src="assets/empty-data.png" alt="" class="empty-data-img"><p class="empty-data-text">No employees have clocked in.</p>';
+  } else {
+    container.className = 'main-card-content';
+    container.style.flexWrap = 'wrap';
+    container.style.padding = '8px 0';
+    container.style.justifyContent = 'flex-start';
+    let html = '';
+    let names = ['Alex','Jordan','Sam','Casey','Riley','Morgan','Taylor','Quinn','Avery','Blake','Charlie','Dakota','Emery','Finley'];
+    for (let i = 0; i < count; i++) {
+      let name = names[i % names.length] + (i >= names.length ? (Math.floor(i / names.length) + 1) : '');
+      html += '<span class="employee-badge" contenteditable="false" onclick="editBadge(this)">' + name + '</span>';
+    }
+    container.innerHTML = html;
+  }
+  localStorage.setItem('inf_employeeCount', count);
+}
+
+function editBadge(el) {
+  if (el.contentEditable === 'true') return;
+  el.contentEditable = 'true';
+  el.focus();
+  let range = document.createRange();
+  range.selectNodeContents(el);
+  let sel = window.getSelection();
+  sel.removeAllRanges(); sel.addRange(range);
+  el.addEventListener('blur', function handler() {
+    el.contentEditable = 'false';
+    el.removeEventListener('blur', handler);
+  }, { once: true });
+  el.addEventListener('keydown', function handler(e) {
+    if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+  }, { once: true });
+}
+
+// ===== LOCALSTORAGE PERSISTENCE =====
+function saveState() {
+  localStorage.setItem('inf_totalEarnings', storedGrossTotal.toString());
+  localStorage.setItem('inf_earningsMode', earningsMode);
+  localStorage.setItem('inf_pct', JSON.stringify(pct));
+}
+
+function loadState() {
+  // Load settings
+  let savedTotal = localStorage.getItem('inf_totalEarnings');
+  let savedMode = localStorage.getItem('inf_earningsMode');
+  let savedPct = localStorage.getItem('inf_pct');
+
+  if (savedPct) {
+    try { pct = JSON.parse(savedPct); } catch(e) {}
+  }
+  // Referrals always 0 — redistribute its share to messages
+  if (pct.ref > 0) { pct.msg += pct.ref; pct.ref = 0; }
+  if (savedMode) {
+    earningsMode = savedMode;
+    let btn = document.getElementById('earnings-mode-btn');
+    btn.innerText = earningsMode === 'net' ? 'Net earnings' : 'Gross earnings';
+    let links = document.querySelectorAll('#earnings-dropdown-list a');
+    links.forEach(a => {
+      a.classList.remove('active');
+      if (a.dataset.value === earningsMode) a.classList.add('active');
+    });
+  }
+  if (savedTotal && parseFloat(savedTotal) > 0) {
+    storedGrossTotal = parseFloat(savedTotal);
+  }
+  updateChartWithPeriod();
+
+  // Load employee count
+  let empCount = localStorage.getItem('inf_employeeCount');
+  if (empCount && parseInt(empCount) > 0) {
+    document.getElementById('employee-count-display').innerText = empCount;
+    // Regenerate badges
+    let count = parseInt(empCount);
+    let container = document.getElementById('employee-badges-container');
+    container.className = 'main-card-content';
+    container.style.flexWrap = 'wrap';
+    container.style.padding = '8px 0';
+    container.style.justifyContent = 'flex-start';
+    let html = '';
+    let names = ['Alex','Jordan','Sam','Casey','Riley','Morgan','Taylor','Quinn','Avery','Blake','Charlie','Dakota','Emery','Finley'];
+    for (let i = 0; i < count; i++) {
+      let name = names[i % names.length] + (i >= names.length ? (Math.floor(i / names.length) + 1) : '');
+      html += '<span class="employee-badge" contenteditable="false" onclick="editBadge(this)">' + name + '</span>';
+    }
+    container.innerHTML = html;
+  }
+
+  // Apply UI settings
+  updateUIFromSettings();
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+  // Make earnings editable
+  makeEditable(els.total(), 'total');
+  makeEditable(els.sub(), 'sub');
+  makeEditable(els.tips(), 'tips');
+  makeEditable(els.posts(), 'posts');
+  makeEditable(els.ref(), 'ref');
+  makeEditable(els.msg(), 'msg');
+
+  // Gross/Net dropdown
+  let ddBtn = document.getElementById('earnings-mode-btn');
+  let ddList = document.getElementById('earnings-dropdown-list');
+  ddBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    ddList.classList.toggle('open');
+  });
+  ddList.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      e.stopPropagation();
+      ddList.querySelectorAll('a').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+      ddBtn.innerText = this.innerText;
+      ddList.classList.remove('open');
+      earningsMode = this.dataset.value;
+      distributeFromTotal(storedGrossTotal);
+    });
+  });
+  document.addEventListener('click', function() { ddList.classList.remove('open'); });
+
+  // Time selector buttons
+  var shiftsNoData = '<img src="assets/empty-data.png" alt=""><p>No data</p>';
+  document.querySelectorAll('.time-selector li button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.time-selector li').forEach(li => li.classList.remove('active'));
+      this.parentElement.classList.add('active');
+      var spinnerHTML = '<div class="dash-loading"><div class="emp-spinner"><span></span><span></span><span></span><span></span></div></div>';
+      var shiftsContent = document.getElementById('dash-myshifts-content');
+      var chartContainer = document.getElementById('chart-container');
+      shiftsContent.innerHTML = spinnerHTML;
+      shiftsContent.style.top = '0';
+      shiftsContent.style.minHeight = '200px';
+      chartContainer.innerHTML = spinnerHTML;
+      setTimeout(function() {
+        shiftsContent.innerHTML = shiftsNoData;
+        shiftsContent.style.top = '17%';
+        shiftsContent.style.minHeight = '';
+        updateChartWithPeriod();
+      }, 800);
+    });
+  });
+
+  // Sidebar toggle
+  document.querySelectorAll('.sidebar-link-list li > button:not(#of-top-menu):not(.employee-count-btn)').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.classList.toggle('active');
+      let sub = this.nextElementSibling;
+      if (sub && sub.classList.contains('sub-menu')) {
+        sub.style.display = sub.style.display === 'block' ? 'none' : 'block';
+      }
+    });
+  });
+
+  // Menu collapse
+  document.querySelector('.menu-btn').addEventListener('click', function() {
+    document.querySelector('.dashboard-wrap').classList.toggle('menu-close');
+  });
+
+  // Settings button
+  document.getElementById('settings-btn').addEventListener('click', function(e) {
+    e.preventDefault(); openSettings();
+  });
+  document.getElementById('settings-close').addEventListener('click', closeSettings);
+  document.getElementById('settingsModal').addEventListener('click', function(e) {
+    if (e.target === this) closeSettings();
+  });
+
+  // Settings actions
+  document.getElementById('calculate-btn').addEventListener('click', applySettings);
+  document.getElementById('randomize-btn').addEventListener('click', randomizeEarnings);
+  document.getElementById('logout-btn').addEventListener('click', function() {
+    localStorage.clear(); location.reload();
+  });
+
+  // OF Badge toggle
+  document.getElementById('showOfBadge').addEventListener('change', updateBadgeSlider);
+
+  // Avatar display click -> open avatar modal
+  document.getElementById('avatar-display-btn').addEventListener('click', openAvatarModal);
+  document.getElementById('avatar-close').addEventListener('click', closeAvatarModal);
+  document.getElementById('avatarModal').addEventListener('click', function(e) {
+    if (e.target === this) closeAvatarModal();
+  });
+
+  // Avatar selection
+  document.querySelectorAll('#avatarList img').forEach(img => {
+    img.addEventListener('click', function() {
+      document.querySelectorAll('#avatarList img').forEach(i => i.classList.remove('selected'));
+      this.classList.add('selected');
+      selectedAvatarSrc = this.src;
+      localStorage.setItem('inf_avatarImg', this.src);
+      localStorage.setItem('inf_avatarIsImage', '1');
+      // Update avatar display
+      let btn = document.getElementById('avatar-display-btn');
+      btn.innerHTML = '<img class="avatarImg" src="' + this.src + '" alt="">';
+      setTimeout(closeAvatarModal, 300);
+    });
+  });
+
+  // Avatar upload
+  document.getElementById('uploadButton').addEventListener('click', function() {
+    let fileInput = document.getElementById('fileInput');
+    if (fileInput.files.length > 0) {
+      let reader = new FileReader();
+      reader.onload = function(e) {
+        localStorage.setItem('inf_avatarImg', e.target.result);
+        localStorage.setItem('inf_avatarIsImage', '1');
+        let btn = document.getElementById('avatar-display-btn');
+        btn.innerHTML = '<img class="avatarImg" src="' + e.target.result + '" alt="">';
+        closeAvatarModal();
+      };
+      reader.readAsDataURL(fileInput.files[0]);
+    }
+  });
+
+  // Employee count button
+  document.getElementById('employee-count-btn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    updateEmployeeCount();
+  });
+
+  // Manage Employees page
+  document.getElementById('manage-employees-btn').addEventListener('click', function(e) {
+    e.preventDefault(); showEmpPage();
+  });
+  // Back to dashboard when clicking Dashboard in sidebar
+  document.getElementById('dashboard-nav-btn').addEventListener('click', function(e) {
+    e.preventDefault(); showDashboard();
+  });
+  // Add employee modal
+  document.getElementById('emp-add-btn').addEventListener('click', openEmpAddModal);
+  document.getElementById('emp-add-close').addEventListener('click', closeEmpAddModal);
+  document.getElementById('emp-add-cancel').addEventListener('click', closeEmpAddModal);
+  document.getElementById('empAddModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEmpAddModal();
+  });
+  document.getElementById('emp-add-save').addEventListener('click', empSaveEmployee);
+  document.getElementById('emp-add-custom-role').addEventListener('click', function() {
+    let name = prompt('Enter custom role name:');
+    if (!name || !name.trim()) return;
+    name = name.trim();
+    let container = document.getElementById('emp-new-role');
+    let existing = Array.from(container.querySelectorAll('input[type="checkbox"]')).map(cb => cb.value.toLowerCase());
+    if (existing.includes(name.toLowerCase())) { alert('Role already exists.'); return; }
+    let label = document.createElement('label');
+    label.innerHTML = '<input type="checkbox" value="' + name + '" checked> ' + name;
+    container.appendChild(label);
+  });
+  // Creator assign button
+  document.getElementById('emp-assign-creator-btn').addEventListener('click', empShowCreatorPicker);
+  // Create model button
+  document.getElementById('emp-create-model-btn').addEventListener('click', function() {
+    let input = document.getElementById('emp-new-model-name');
+    let name = input.value.trim();
+    if (!name) return;
+    let models = getModels();
+    if (models.map(function(m) { return m.toLowerCase(); }).includes(name.toLowerCase())) {
+      alert('Model "' + name + '" already exists.');
+      return;
+    }
+    models.push(name);
+    saveModels(models);
+    input.value = '';
+    // Auto-assign to current employee
+    if (!empModalCreators.includes(name)) {
+      empModalCreators.push(name);
+      empRenderModalCreators();
+    }
+  });
+  // Employee filters
+  document.getElementById('emp-filter-search').addEventListener('click', empApplyFilters);
+  document.getElementById('emp-filter-reset').addEventListener('click', empResetFilters);
+  // Sidebar search removed - groups are editable via dots menu
+  // Select all checkbox
+  document.getElementById('emp-select-all').addEventListener('change', function() {
+    document.querySelectorAll('.emp-row-check').forEach(cb => { cb.checked = this.checked; });
+  });
+
+  // Load saved state
+  loadState();
+
+  // Init chart drag handlers (once)
+  initChartDrag();
+
+  // ===== PAGE NAVIGATION =====
+  function hideAllPages() {
+    document.getElementById('dashboard-content').style.display = 'none';
+    document.getElementById('emp-page').classList.remove('active');
+    document.getElementById('analytics-page').classList.remove('active');
+    document.getElementById('smartlists-page').classList.remove('active');
+    document.getElementById('sensitivewords-page').classList.remove('active');
+  }
+
+  function showSidebar(which) {
+    var ms = document.getElementById('main-sidebar');
+    var as = document.getElementById('analytics-sidebar');
+    var gs = document.getElementById('growth-sidebar');
+    var os = document.getElementById('ofmanager-sidebar');
+    // Hide all
+    ms.style.display = 'none'; ms.classList.remove('active');
+    as.style.display = 'none'; as.classList.remove('active');
+    gs.style.display = 'none'; gs.classList.remove('active');
+    os.style.display = 'none'; os.classList.remove('active');
+    // Show target
+    if (which === 'main') { ms.style.display = 'block'; ms.classList.add('active'); }
+    else if (which === 'analytics') { as.style.display = 'block'; as.classList.add('active'); }
+    else if (which === 'growth') { gs.style.display = 'block'; gs.classList.add('active'); }
+    else if (which === 'ofmanager') { os.style.display = 'block'; os.classList.add('active'); }
+  }
+  // Expose globally for showEmpPage/showDashboard
+  window.showSidebar = showSidebar;
+
+  function clearSidebarActive() {
+    document.querySelectorAll('.sidebar-link-list li > a, .sidebar-link-list li > button').forEach(function(el) {
+      if (el.id !== 'of-top-menu') el.classList.remove('active');
+    });
+  }
+
+  // Dashboard nav
+  document.getElementById('dashboard-nav-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    hideAllPages();
+    showSidebar('main');
+    document.getElementById('dashboard-content').style.display = '';
+    clearSidebarActive();
+    this.classList.add('active');
+  });
+
+  // Creator reports nav (from Analytics submenu)
+  document.getElementById('creator-reports-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    hideAllPages();
+    showSidebar('main');
+    document.getElementById('analytics-page').classList.add('active');
+    // Update nav active states
+    document.getElementById('manage-employees-btn').classList.remove('active');
+    document.getElementById('dashboard-nav-btn').classList.remove('active');
+    renderAnalytics();
+  });
+  document.getElementById('analytics-back-btn').addEventListener('click', function() {
+    hideAllPages();
+    showSidebar('main');
+    document.getElementById('dashboard-content').style.display = '';
+    clearSidebarActive();
+    document.getElementById('dashboard-nav-btn').classList.add('active');
+  });
+
+  // OF Manager nav
+  document.getElementById('of-manager-nav-btn').addEventListener('click', function() {
+    hideAllPages();
+    showSidebar('ofmanager');
+    document.getElementById('dashboard-content').style.display = '';
+  });
+  document.getElementById('ofmanager-back-btn').addEventListener('click', function() {
+    hideAllPages();
+    showSidebar('main');
+    document.getElementById('dashboard-content').style.display = '';
+    clearSidebarActive();
+    document.getElementById('dashboard-nav-btn').classList.add('active');
+  });
+
+  // Growth nav
+  document.getElementById('growth-nav-btn').addEventListener('click', function() {
+    hideAllPages();
+    showSidebar('growth');
+    document.getElementById('smartlists-page').classList.add('active');
+    renderSmartLists();
+  });
+  document.getElementById('growth-back-btn').addEventListener('click', function() {
+    hideAllPages();
+    showSidebar('main');
+    document.getElementById('dashboard-content').style.display = '';
+    clearSidebarActive();
+    document.getElementById('dashboard-nav-btn').classList.add('active');
+  });
+
+  // Smart Lists nav
+  document.getElementById('smartlists-nav-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    hideAllPages();
+    document.getElementById('smartlists-page').classList.add('active');
+    document.querySelectorAll('#growth-sidebar .sidebar-link-list li > a').forEach(function(a) { a.classList.remove('active'); });
+    this.classList.add('active');
+    renderSmartLists();
+  });
+
+  // Sensitive Words nav
+  document.getElementById('sensitivewords-nav-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    hideAllPages();
+    document.getElementById('sensitivewords-page').classList.add('active');
+    document.querySelectorAll('#growth-sidebar .sidebar-link-list li > a').forEach(function(a) { a.classList.remove('active'); });
+    this.classList.add('active');
+    renderSensitiveWords();
+  });
+
+  // ===== ANALYTICS RENDERING =====
+  function renderAnalytics(withSpinner) {
+    var spinnerHTML = '<div class="dash-loading"><div class="emp-spinner"><span></span><span></span><span></span><span></span></div></div>';
+    var trendsEl = document.getElementById('trends-chart-inner');
+    var channelSvg = document.getElementById('channel-chart-svg');
+    var channelLegend = document.getElementById('channel-legend');
+    if (withSpinner !== false) {
+      trendsEl.innerHTML = spinnerHTML;
+      channelSvg.innerHTML = '';
+      channelLegend.innerHTML = spinnerHTML;
+      setTimeout(function() {
+        renderEarningsTrends();
+        renderChannelChart();
+      }, 800);
+    } else {
+      renderEarningsTrends();
+      renderChannelChart();
+    }
+    // Update analytics sidebar total
+    let total = applyMode(storedGrossTotal);
+    document.getElementById('analytics-sidebar-total').textContent = '$' + fmt(total);
+    // Update analytics earnings cards
+    let sub = total * pct.sub, tips = total * pct.tips, posts = total * pct.posts;
+    let ref = total * pct.ref, msg = total * pct.msg;
+    document.querySelector('.analytics-total').innerHTML = '<span class="dollar-sign" style="color:var(--color-success)">$</span>' + fmt(total);
+    document.querySelector('.analytics-sub').textContent = '$' + fmt(sub);
+    document.querySelector('.analytics-tips').textContent = '$' + fmt(tips);
+    document.querySelector('.analytics-posts').textContent = '$' + fmt(posts);
+    document.querySelector('.analytics-ref').textContent = '$' + fmt(ref);
+    document.querySelector('.analytics-msg').textContent = '$' + fmt(msg);
+    document.querySelector('.analytics-msg').style.color = '#8b5cf6';
+  }
+
+  function renderEarningsTrends() {
+    let container = document.getElementById('trends-chart-inner');
+    container.style.position = 'relative';
+    container.style.height = '280px';
+    container.style.minWidth = '100%';
+    let days = 28;
+    let total = applyMode(storedGrossTotal);
+    let dailyAvg = total / days;
+    let maxVal = dailyAvg * 1.6;
+    // Nice round max for Y-axis
+    let mag = Math.pow(10, Math.floor(Math.log10(maxVal)));
+    let niceMax = Math.ceil(maxVal / mag) * mag || 10000;
+    let chartH = 200;
+    let yLabelW = 55;
+    let xLabelH = 30;
+    let html = '';
+    // Y-axis labels + dashed grid lines (4 levels: 0, 1/3, 2/3, max)
+    let ySteps = [0, niceMax / 3, (niceMax * 2) / 3, niceMax];
+    for (let i = 0; i < ySteps.length; i++) {
+      let val = Math.round(ySteps[i]);
+      let label = val === 0 ? '0' : val.toLocaleString();
+      let yPos = chartH - (val / niceMax) * chartH;
+      html += '<div style="position:absolute;left:0;right:0;top:' + yPos + 'px;display:flex;align-items:center;z-index:1">';
+      html += '<span style="font-size:11px;color:#555;width:' + yLabelW + 'px;text-align:right;padding-right:8px;flex-shrink:0">' + label + '</span>';
+      html += '<div style="flex:1;border-top:1px dashed #333"></div>';
+      html += '</div>';
+    }
+    // Bars
+    html += '<div style="position:absolute;left:' + yLabelW + 'px;right:0;top:0;height:' + chartH + 'px;display:flex;align-items:flex-end;gap:3px">';
+    for (let d = 0; d < days; d++) {
+      let dayFactor = 0.55 + Math.random() * 0.9;
+      let dayTotal = dailyAvg * dayFactor;
+      let h = Math.max(3, (dayTotal / niceMax) * chartH);
+      html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center">' +
+        '<div style="width:80%;height:' + h.toFixed(1) + 'px;background:#60a5fa;border-radius:3px 3px 0 0"></div>' +
+      '</div>';
+    }
+    html += '</div>';
+    // X-axis labels
+    html += '<div style="position:absolute;left:' + yLabelW + 'px;right:0;top:' + (chartH + 6) + 'px;display:flex;gap:3px">';
+    for (let d = 0; d < days; d++) {
+      html += '<div style="flex:1;text-align:center"><span style="font-size:10px;color:#666;white-space:nowrap">Feb ' + (d + 1) + '</span></div>';
+    }
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function renderChannelChart() {
+    let total = applyMode(storedGrossTotal);
+    let channelData = [
+      { name: 'Subscriptions', pct: pct.sub, color: '#3b82f6' },
+      { name: 'Tips', pct: pct.tips, color: '#22c55e' },
+      { name: 'Messages', pct: pct.msg, color: '#8b5cf6' },
+      { name: 'Posts', pct: pct.posts, color: '#6366f1' },
+      { name: 'Referrals', pct: pct.ref, color: '#ef4444' }
+    ];
+
+    // Legend
+    let legendHtml = '';
+    channelData.forEach(function(ch) {
+      let val = total * ch.pct;
+      legendHtml += '<div class="channel-legend-item">' +
+        '<span class="channel-legend-dot" style="background:' + ch.color + '"></span>' +
+        '<span class="channel-legend-name">' + ch.name + '</span>' +
+        '<span class="channel-legend-pct">' + (ch.pct * 100).toFixed(2) + '%</span>' +
+        '<span class="channel-legend-val">$' + fmt(val) + '</span>' +
+      '</div>';
+    });
+    document.getElementById('channel-legend').innerHTML = legendHtml;
+
+    // Simple line chart SVG
+    let svgEl = document.getElementById('channel-chart-svg');
+    let days = 30;
+    let W = 700, H = 160, padL = 40, padR = 10, padT = 10, padB = 30;
+    let plotW = W - padL - padR, plotH = H - padT - padB;
+
+    // Generate daily message earnings (dominant channel) as line
+    let dailyAvg = (total * pct.msg) / days;
+    let points = [];
+    let maxVal = 0;
+    for (let i = 0; i < days; i++) {
+      let v = dailyAvg * (0.4 + Math.random() * 1.2);
+      points.push(v);
+      if (v > maxVal) maxVal = v;
+    }
+    let niceMax = Math.ceil(maxVal / 100) * 100 || 100;
+
+    let svg = '';
+    // Grid lines
+    for (let i = 0; i <= 4; i++) {
+      let y = padT + plotH - (i / 4) * plotH;
+      svg += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y + '" stroke="#333" stroke-width="0.5" stroke-dasharray="3,3"/>';
+      svg += '<text x="' + (padL - 5) + '" y="' + (y + 3) + '" text-anchor="end" fill="#bbb" font-size="9">' + Math.round(niceMax * i / 4) + '</text>';
+    }
+
+    // Line path
+    let pathD = '';
+    for (let i = 0; i < points.length; i++) {
+      let x = padL + (i / (points.length - 1)) * plotW;
+      let y = padT + plotH - (points[i] / niceMax) * plotH;
+      pathD += (i === 0 ? 'M' : 'L') + ' ' + x.toFixed(1) + ' ' + y.toFixed(1);
+    }
+    svg += '<path d="' + pathD + '" fill="none" stroke="#F88056" stroke-width="2" stroke-linejoin="round"/>';
+
+    // X labels
+    for (let i = 0; i < days; i += 4) {
+      let x = padL + (i / (days - 1)) * plotW;
+      svg += '<text x="' + x.toFixed(1) + '" y="' + (H - 5) + '" text-anchor="middle" fill="#bbb" font-size="9">Oct ' + (i + 1) + '</text>';
+    }
+    svgEl.innerHTML = svg;
+  }
+
+  // ===== SMART LISTS RENDERING =====
+  function renderSmartLists() {
+    let tbody = document.getElementById('smartlists-tbody');
+    let lists = [
+      { criteria: 'Total spent $1-$10', icon: '', status: 'active', fans: '5M', actions: true },
+      { criteria: 'Total spent $10-$100', icon: '', status: 'active', fans: '471', actions: true },
+      { criteria: 'Total spent $100-$250', icon: 'Insistentes', status: 'active', fans: '76', actions: true },
+      { criteria: 'Total spent $250-$600', icon: 'Detractores', status: 'active', fans: '3', actions: true },
+      { criteria: 'Total spent $600 no upper limit', icon: 'Ballenas', status: 'active', fans: '2', actions: true }
+    ];
+    let html = '';
+    lists.forEach(function(item) {
+      let iconBadge = item.icon ? '<span style="margin-right:6px;font-size:12px;color:#F88056;font-weight:600">' + item.icon + ' <i class="fa-solid fa-fire" style="color:#F88056;font-size:11px"></i></span>' : '';
+      html += '<tr>' +
+        '<td><div class="sl-criteria">' + iconBadge + item.criteria + '</div></td>' +
+        '<td><span class="sl-status active">active</span></td>' +
+        '<td>' + item.fans + '</td>' +
+        '<td class="sl-actions">' +
+          '<button class="sl-action-btn"><i class="fa-solid fa-pen"></i></button>' +
+          '<button class="sl-action-btn"><i class="fa-solid fa-copy"></i></button>' +
+          '<button class="sl-action-btn"><i class="fa-solid fa-trash"></i></button>' +
+        '</td>' +
+      '</tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  // ===== SENSITIVE WORDS RENDERING =====
+  function renderSensitiveWords(filterLetter) {
+    // Alphabet filter
+    let alphaContainer = document.getElementById('sw-alpha-filter');
+    if (!alphaContainer.children.length) {
+      let alphaHtml = '';
+      for (let i = 65; i <= 90; i++) {
+        let letter = String.fromCharCode(i);
+        alphaHtml += '<button class="sw-alpha-btn" data-letter="' + letter + '">' + letter + '</button>';
+      }
+      alphaHtml += '<button class="sw-special-btn">Special symbol</button>';
+      alphaContainer.innerHTML = alphaHtml;
+      alphaContainer.querySelectorAll('.sw-alpha-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          alphaContainer.querySelectorAll('.sw-alpha-btn').forEach(function(b) { b.classList.remove('active'); });
+          this.classList.add('active');
+          renderSensitiveWords(this.dataset.letter);
+        });
+      });
+    }
+
+    // Words data (from screenshot - "p" section visible)
+    let words = [
+      'cum','c*m','c u m','content','cumming','pedo',
+      'paid','paid out','paid','pay','pay per meet','pay05',
+      'payoff','payments',
+      'pricett','price','price','pedocriminal','pedo','fxcklife','pedofilia',
+      'pedophile','pedophilia','pedophiliac','pm','promote','ongoing','penis masseeg',
+      'phone','f11','girl','one','abusing','clone','plastic bag n of','finalize',
+      'plasticbagfull','problem','prison','prin','prize','proxying','prospert',
+      'custody',
+      'party','preferredWT11','protaso','prolapse exit','prostitution','prostitute','prostitutive',
+      'sex'
+    ];
+
+    if (filterLetter) {
+      words = words.filter(function(w) { return w.charAt(0).toUpperCase() === filterLetter; });
+    }
+
+    let grid = document.getElementById('sw-grid');
+    let html = '';
+    words.forEach(function(w) {
+      html += '<div class="sw-card">' + w + '</div>';
+    });
+    grid.innerHTML = html || '<div style="padding:40px;text-align:center;color:var(--color-text-tertiary);grid-column:1/-1">No words found for this letter</div>';
+  }
+
+  // Populate employees in comparison selectors
+  (function() {
+    let emps = getEmployees();
+    document.querySelectorAll('.comparison-selectors select').forEach(function(sel) {
+      emps.forEach(function(e, i) {
+        let opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = e.name;
+        sel.appendChild(opt);
+      });
+    });
+  })();
+});
+</script>
+
+<!-- Electron Integration -->
+<div id="license-error-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99999;align-items:center;justify-content:center;flex-direction:column">
+  <div style="background:#151515;border:1px solid #333;border-radius:12px;padding:32px;text-align:center;max-width:400px">
+    <div style="font-size:40px;margin-bottom:16px">&#9888;</div>
+    <h2 style="color:#ef4444;font-size:18px;margin-bottom:8px">Error de Licencia</h2>
+    <p id="license-error-msg" style="color:#aaa;font-size:14px;margin-bottom:16px"></p>
+    <p style="color:#666;font-size:12px">La aplicación se cerrará en unos segundos...</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  // Only run in Electron
+  if (!window.electronAPI) return;
+
+  // Window controls
+  document.getElementById('btn-minimize').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.electronAPI.minimize();
+  });
+  document.getElementById('btn-maximize').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.electronAPI.maximize();
+  });
+  document.getElementById('btn-close').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.electronAPI.close();
+  });
+
+  // License error handler
+  window.electronAPI.onLicenseError(function(msg) {
+    var overlay = document.getElementById('license-error-overlay');
+    document.getElementById('license-error-msg').textContent = msg;
+    overlay.style.display = 'flex';
+  });
+
+  // Make header draggable for frameless window
+  var header = document.querySelector('.dashboard-header');
+  if (header) {
+    header.style.webkitAppRegion = 'drag';
+    // Make interactive elements non-draggable
+    header.querySelectorAll('a, button, input, .notification-link, .dropdown').forEach(function(el) {
+      el.style.webkitAppRegion = 'no-drag';
+    });
+  }
+})();
+</script>
+</body>
+</html>

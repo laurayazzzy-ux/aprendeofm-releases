@@ -1,0 +1,35 @@
+$(document).ready(function(){
+    $(".sidebar-link-list li > button").on("click", function() {
+        if($(this).hasClass("active")) {
+            $(this).removeClass("active");
+            $(this).next().slideUp();
+        }
+        else {
+            $(this).toggleClass("active");
+            $(this).next().slideToggle();
+        }
+    });
+
+    $(".sidebar-link-list li .sub-menu li a").on("click", function() {
+        $(".sidebar-link-list > li > a").removeClass("active");
+        $(this).parent().parent().parent().find('a').addClass("active");
+        $(".sidebar-link-list li .sub-menu li a").removeClass("active");
+        $(this).addClass("active");
+    });
+
+    $(".sidebar-link-list > li > a").on("click", function() {
+        $(".sidebar-link-list li .sub-menu li a").removeClass("active");
+        $(".sidebar-link-list > li > a").removeClass("active");
+        $(this).addClass("active");
+    });
+
+
+    $(".overview-heading ul li button").on("click", function() {
+        $(".overview-heading ul li").removeClass("active");
+        $(this).parent().addClass("active");
+    });
+
+    $(".menu-btn").on("click", function() {
+        $(".dashboard-wrap").toggleClass("menu-close");
+    });
+});

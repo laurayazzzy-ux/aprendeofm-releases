@@ -1,0 +1,35 @@
+{
+  "name": "aura",
+  "version": "1.0.4",
+  "description": "Aura Desktop Application",
+  "main": "src-electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:backend": "node backend/server.js",
+    "build:protect": "node scripts/build.js",
+    "build:win": "npm run build:protect && electron-builder --win --publish never",
+    "build:mac": "npm run build:protect && electron-builder --mac --publish never",
+    "build:all": "npm run build:protect && electron-builder --win --mac --publish never",
+    "release:win": "npm run build:protect && electron-builder --win --publish always",
+    "release:mac": "npm run build:protect && electron-builder --mac --publish always",
+    "release:all": "npm run build:protect && electron-builder --win --mac --publish always",
+    "generate-key": "node scripts/generate-key.js",
+    "setup-db": "node backend/sql/setup.js",
+    "create-admin": "node scripts/create-admin.js",
+    "version:patch": "npm version patch --no-git-tag-version",
+    "version:minor": "npm version minor --no-git-tag-version",
+    "version:major": "npm version major --no-git-tag-version"
+  },
+  "devDependencies": {
+    "asarmor": "^3.0.2",
+    "electron": "^28.3.3",
+    "electron-builder": "^25.0.0",
+    "javascript-obfuscator": "^4.1.1"
+  },
+  "dependencies": {
+    "bytenode": "^1.5.7",
+    "electron-store": "^8.2.0",
+    "electron-updater": "^6.8.3",
+    "node-machine-id": "^1.1.12"
+  }
+}

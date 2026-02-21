@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+backend/node_modules/
+backend/.env
+backend/data/
+*.log
+*.db
+*.sqlite
+.DS_Store
+Thumbs.db
+.env
+*.pem
+*.key
+*.cert
+app/assets/gWan6*

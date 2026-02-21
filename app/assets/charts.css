@@ -1,0 +1,43 @@
+#employee-sales {
+    width: 98%;
+    height: 400px;
+    margin-left: 16px;
+    background-color: #fff;
+    border-radius: 12px;
+}
+
+.info-icon span{	
+	display:none;
+	color:#000;
+	background:#2F2F2F;
+	padding:5px;
+	border-radius:4px;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	width:100px;
+	text-align:center;
+	position: absolute;
+	z-index:10;
+}
+.info-icon { 
+	display: inline-block;
+}
+.info-icon:hover span{ 
+	display:none; 
+}
+
+.col-lg-3.charts {
+    display: flex;
+    width: 100% !important;
+}
+
+.main-card-wrap.charts {
+    width: 240px;
+}
+
+.main-card-wrap.charts1 {
+    width: 98%;
+	margin-left:15px;
+	margin-top: 15px;
+}
+
