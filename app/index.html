@@ -3315,7 +3315,12 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('calculate-btn').addEventListener('click', applySettings);
   document.getElementById('randomize-btn').addEventListener('click', randomizeEarnings);
   document.getElementById('logout-btn').addEventListener('click', function() {
-    localStorage.clear(); location.reload();
+    localStorage.clear();
+    if (window.electronAPI && window.electronAPI.logout) {
+      window.electronAPI.logout();
+    } else {
+      location.reload();
+    }
   });
 
   // OF Badge toggle
