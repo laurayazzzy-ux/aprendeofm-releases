@@ -2069,6 +2069,27 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
       </a>
     </div>
+    <div style="text-align:center;padding:12px 0 4px;border-top:1px solid #222;margin-top:12px;">
+      <span style="color:#555;font-size:11px;">Aura v<span id="app-version-label">...</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== UPDATE POPUP ===== -->
+<div id="update-popup" style="display:none;position:fixed;bottom:24px;right:24px;z-index:99998;background:#151515;border:1px solid #333;border-radius:12px;padding:20px 24px;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+  <div style="display:flex;align-items:flex-start;gap:12px;">
+    <div style="width:36px;height:36px;background:#1a3a6e;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2d74ff" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </div>
+    <div style="flex:1;">
+      <div style="color:#fff;font-size:14px;font-weight:600;margin-bottom:4px;">Nueva actualización disponible</div>
+      <div style="color:#888;font-size:12px;margin-bottom:14px;">Versión <span id="update-version">0.0.0</span> lista para instalar</div>
+      <div style="display:flex;gap:8px;">
+        <button id="update-accept-btn" style="flex:1;padding:8px 0;background:#2d74ff;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Actualizar</button>
+        <button id="update-dismiss-btn" style="flex:1;padding:8px 0;background:#222;color:#aaa;border:1px solid #333;border-radius:6px;font-size:13px;cursor:pointer;">Más tarde</button>
+      </div>
+    </div>
+    <button id="update-close-btn" style="background:none;border:none;color:#555;font-size:16px;cursor:pointer;padding:0;line-height:1;">&times;</button>
   </div>
 </div>
 
@@ -3813,6 +3834,34 @@ document.addEventListener('DOMContentLoaded', function() {
     var overlay = document.getElementById('license-error-overlay');
     document.getElementById('license-error-msg').textContent = msg;
     overlay.style.display = 'flex';
+  });
+
+  // Load app version in Settings
+  window.electronAPI.getAppVersion().then(function(v) {
+    var el = document.getElementById('app-version-label');
+    if (el) el.textContent = v || '?';
+  }).catch(function(){});
+
+  // Update popup handler
+  window.electronAPI.onUpdateAvailable(function(info) {
+    var popup = document.getElementById('update-popup');
+    document.getElementById('update-version').textContent = info.version || '?';
+    popup.style.display = 'block';
+  });
+
+  document.getElementById('update-accept-btn').addEventListener('click', function() {
+    this.textContent = 'Descargando...';
+    this.disabled = true;
+    this.style.opacity = '0.6';
+    window.electronAPI.acceptUpdate();
+  });
+
+  document.getElementById('update-dismiss-btn').addEventListener('click', function() {
+    document.getElementById('update-popup').style.display = 'none';
+  });
+
+  document.getElementById('update-close-btn').addEventListener('click', function() {
+    document.getElementById('update-popup').style.display = 'none';
   });
 
   // Make header draggable for frameless window

@@ -26,7 +26,7 @@ const { getFingerprint, getHardwareInfo } = require('./services/fingerprint');
 debugLog('Loading heartbeat...');
 const { startHeartbeat, stopHeartbeat } = require('./services/heartbeat');
 debugLog('Loading updater...');
-const { checkForUpdatesOnStartup, registerUpdateIPC } = require('./services/updater');
+const { registerUpdateIPC } = require('./services/updater');
 debugLog('All modules loaded');
 
 // Prevent multiple instances
@@ -259,19 +259,6 @@ app.whenReady().then(async () => {
 
   // Disable hardware acceleration in renderer for security
   app.disableHardwareAcceleration;
-
-  // Check for updates before anything else (only in production)
-  if (app.isPackaged) {
-    debugLog('Checking for updates...');
-    try {
-      const noUpdate = await checkForUpdatesOnStartup();
-      debugLog('Update check result (continue): ' + noUpdate);
-    } catch (err) {
-      debugLog('Update check failed: ' + err.message);
-    }
-  } else {
-    debugLog('Dev mode - skipping update check');
-  }
 
   // CSP headers
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {

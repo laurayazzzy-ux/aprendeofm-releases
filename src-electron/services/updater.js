@@ -3,91 +3,73 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 let updateWindow = null;
-let updateFoundVersion = null;
+let mainWindowRef = null;
 
 /**
- * Check for updates on app startup.
- * Shows a small window if an update is found, downloads, installs, and restarts.
- * Returns a promise: resolves true if no update (continue app), or never resolves if updating.
+ * Check for updates silently in the background.
+ * If an update is found, notify the main window so it shows a popup.
  */
-function checkForUpdatesOnStartup() {
-  return new Promise((resolve) => {
-    // Configure auto-updater
-    autoUpdater.autoDownload = false;
-    autoUpdater.autoInstallOnAppQuit = false;
-    autoUpdater.allowPrerelease = false;
+function checkForUpdatesSilent() {
+  autoUpdater.autoDownload = false;
+  autoUpdater.autoInstallOnAppQuit = false;
+  autoUpdater.allowPrerelease = false;
 
-    autoUpdater.logger = {
-      info: (msg) => console.log('[Updater]', msg),
-      warn: (msg) => console.warn('[Updater]', msg),
-      error: (msg) => console.error('[Updater]', msg),
-      debug: () => {}
-    };
+  autoUpdater.logger = {
+    info: (msg) => console.log('[Updater]', msg),
+    warn: (msg) => console.warn('[Updater]', msg),
+    error: (msg) => console.error('[Updater]', msg),
+    debug: () => {}
+  };
 
-    // Set feed URL - GitHub Releases
-    try {
-      autoUpdater.setFeedURL({
-        provider: 'github',
-        owner: 'laurayazzzy-ux',
-        repo: 'aprendeofm-releases'
+  try {
+    autoUpdater.setFeedURL({
+      provider: 'github',
+      owner: 'laurayazzzy-ux',
+      repo: 'aprendeofm-releases'
+    });
+  } catch (e) {
+    console.error('[Updater] Failed to set feed URL:', e.message);
+    return;
+  }
+
+  autoUpdater.on('update-available', (info) => {
+    // Notify the main window that an update is available
+    if (mainWindowRef && !mainWindowRef.isDestroyed()) {
+      mainWindowRef.webContents.send('update:available', {
+        version: info.version,
+        releaseNotes: info.releaseNotes || ''
       });
-    } catch (e) {
-      console.error('[Updater] Failed to set feed URL:', e.message);
-      resolve(true);
-      return;
     }
+  });
 
-    let updateCheckTimeout = setTimeout(() => {
-      // If check takes more than 10 seconds, skip
-      closeUpdateWindow();
-      resolve(true);
-    }, 10000);
+  autoUpdater.on('update-not-available', () => {
+    if (mainWindowRef && !mainWindowRef.isDestroyed()) {
+      mainWindowRef.webContents.send('update:not-available');
+    }
+  });
 
-    autoUpdater.on('update-available', (info) => {
-      updateFoundVersion = info.version;
-      // Show update window and start download
-      createUpdateWindow();
-      sendStatus('downloading', { version: info.version });
-      autoUpdater.downloadUpdate().catch((err) => {
-        console.error('[Updater] Download error:', err.message);
-        clearTimeout(updateCheckTimeout);
-        closeUpdateWindow();
-        resolve(true);
-      });
-    });
+  autoUpdater.on('download-progress', (progress) => {
+    sendToUpdateWindow('progress', { percent: Math.round(progress.percent) });
+  });
 
-    autoUpdater.on('update-not-available', () => {
-      clearTimeout(updateCheckTimeout);
-      closeUpdateWindow();
-      resolve(true);
-    });
+  autoUpdater.on('update-downloaded', (info) => {
+    sendToUpdateWindow('downloaded', { version: info.version });
+    setTimeout(() => {
+      autoUpdater.quitAndInstall(false, true);
+    }, 1500);
+  });
 
-    autoUpdater.on('download-progress', (progress) => {
-      sendStatus('progress', { percent: Math.round(progress.percent) });
-    });
+  autoUpdater.on('error', (err) => {
+    console.error('[Updater] Error:', err.message);
+    closeUpdateWindow();
+    if (mainWindowRef && !mainWindowRef.isDestroyed()) {
+      mainWindowRef.webContents.send('update:error', err.message);
+    }
+  });
 
-    autoUpdater.on('update-downloaded', () => {
-      clearTimeout(updateCheckTimeout);
-      sendStatus('downloaded', { version: updateFoundVersion });
-      // Wait a moment so user sees "Instalando...", then quit and install
-      setTimeout(() => {
-        autoUpdater.quitAndInstall(false, true);
-      }, 1500);
-    });
-
-    autoUpdater.on('error', (err) => {
-      console.error('[Updater] Error:', err.message);
-      clearTimeout(updateCheckTimeout);
-      closeUpdateWindow();
-      resolve(true);
-    });
-
-    // Start the check
-    autoUpdater.checkForUpdates().catch((err) => {
-      console.error('[Updater] Check error:', err.message);
-      clearTimeout(updateCheckTimeout);
-      resolve(true);
-    });
+  // Start silent check
+  autoUpdater.checkForUpdates().catch((err) => {
+    console.error('[Updater] Check error:', err.message);
   });
 }
 
@@ -101,6 +83,7 @@ function createUpdateWindow() {
     frame: false,
     transparent: false,
     backgroundColor: '#0a0a0a',
+    alwaysOnTop: true,
     webPreferences: {
       preload: path.join(__dirname, '..', 'preload-update.js'),
       contextIsolation: true,
@@ -121,28 +104,48 @@ function closeUpdateWindow() {
   updateWindow = null;
 }
 
-function sendStatus(status, extra = {}) {
+function sendToUpdateWindow(status, extra = {}) {
   if (updateWindow && !updateWindow.isDestroyed()) {
     updateWindow.webContents.send('update:status', { status, ...extra });
   }
 }
 
-// IPC handlers for manual update check from main window
+// Register IPC handlers for update actions from the renderer
 function registerUpdateIPC(mainWindow) {
-  if (!ipcMain.listenerCount || true) {
-    ipcMain.handle('update:check', async () => {
-      try {
-        const result = await autoUpdater.checkForUpdates();
-        return { success: true, version: result?.updateInfo?.version };
-      } catch (err) {
-        return { success: false, error: err.message };
-      }
-    });
+  mainWindowRef = mainWindow;
 
-    ipcMain.handle('update:getVersion', () => {
-      return app.getVersion();
-    });
-  }
+  ipcMain.handle('update:check', async () => {
+    try {
+      const result = await autoUpdater.checkForUpdates();
+      return { success: true, version: result?.updateInfo?.version };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  });
+
+  ipcMain.handle('update:getVersion', () => {
+    return app.getVersion();
+  });
+
+  // User accepted the update -> start downloading
+  ipcMain.handle('update:accept', async () => {
+    try {
+      createUpdateWindow();
+      sendToUpdateWindow('downloading', {});
+      await autoUpdater.downloadUpdate();
+      return { success: true };
+    } catch (err) {
+      closeUpdateWindow();
+      return { success: false, error: err.message };
+    }
+  });
+
+  // Check silently after a short delay
+  setTimeout(() => {
+    if (app.isPackaged) {
+      checkForUpdatesSilent();
+    }
+  }, 3000);
 }
 
-module.exports = { checkForUpdatesOnStartup, registerUpdateIPC };
+module.exports = { checkForUpdatesSilent, registerUpdateIPC };
