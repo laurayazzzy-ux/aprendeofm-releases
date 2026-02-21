@@ -1,6 +1,6 @@
 {
   "name": "aura",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Aura Desktop Application",
   "main": "src-electron/main.js",
   "scripts": {
